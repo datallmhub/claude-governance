@@ -5,13 +5,44 @@ Each subfolder is a self-contained project — copy the one that matches your st
 
 ## Available stacks
 
+### Java
 | Stack | Folder | Status |
 |---|---|---|
 | Java (Spring Boot) + React (TypeScript) | [`java-react/`](./java-react/) | ✅ Ready |
 | Java (Spring Boot) + Angular | `java-angular/` | 🔜 Coming |
-| React / TypeScript only | `react-only/` | 🔜 Coming |
+| Java (Spring Boot) + Vue.js | `java-vue/` | 🔜 Coming |
 | Java (Spring Boot) API only | `java-only/` | 🔜 Coming |
+
+### JavaScript / TypeScript
+| Stack | Folder | Status |
+|---|---|---|
+| React / TypeScript only | `react-only/` | 🔜 Coming |
+| Angular only | `angular-only/` | 🔜 Coming |
+| Vue.js only | `vue-only/` | 🔜 Coming |
+| Next.js (full-stack) | `nextjs/` | 🔜 Coming |
+| Node.js (NestJS) + React | `nestjs-react/` | 🔜 Coming |
+| Node.js (NestJS) + Angular | `nestjs-angular/` | 🔜 Coming |
+
+### Python
+| Stack | Folder | Status |
+|---|---|---|
 | Python (FastAPI) + React | `python-fastapi-react/` | 🔜 Coming |
+| Python (FastAPI) + Angular | `python-fastapi-angular/` | 🔜 Coming |
+| Python (Django) + React | `python-django-react/` | 🔜 Coming |
+| Python (FastAPI) API only | `python-fastapi-only/` | 🔜 Coming |
+
+### .NET
+| Stack | Folder | Status |
+|---|---|---|
+| .NET (ASP.NET Core) + React | `dotnet-react/` | 🔜 Coming |
+| .NET (ASP.NET Core) + Angular | `dotnet-angular/` | 🔜 Coming |
+| .NET (ASP.NET Core) API only | `dotnet-only/` | 🔜 Coming |
+
+### Go
+| Stack | Folder | Status |
+|---|---|---|
+| Go (Gin / Echo) + React | `go-react/` | 🔜 Coming |
+| Go API only | `go-only/` | 🔜 Coming |
 
 ## What's inside each template
 
