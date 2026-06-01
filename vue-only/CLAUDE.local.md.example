@@ -1,0 +1,27 @@
+# Personal Overrides — do not commit (added to .gitignore)
+
+## Communication style
+- Short, direct responses. No end-of-response summary.
+- Do not rephrase my question before answering.
+- Propose one solution, not a list of options unless explicitly asked.
+
+## Personal workflow
+- Always read the full file before modifying it.
+- Always verify compilation (`mvn verify` or `npm run typecheck`) before declaring a task done.
+- When intent is unclear, ask ONE targeted question.
+
+## Local environment
+- Backend on port 8080, frontend on port 5173.
+- Active Spring profile in dev: `local` (file `application-local.yml` ignored by Git).
+- Local database: `taskflow_dev` on PostgreSQL localhost:5432.
+- No Docker in daily dev — PostgreSQL and Redis run natively.
+
+## Code preferences
+- Lombok allowed on the backend: `@Data`, `@Builder`, `@RequiredArgsConstructor`.
+- No JavaDoc except on public service interfaces.
+- Prefer Java records for immutable DTOs.
+- On the frontend, prefer arrow functions over function declarations.
+
+## Work in progress
+- Testing Testcontainers for repository integration tests.
+- Exploring Spring AI for automatic task summary generation.

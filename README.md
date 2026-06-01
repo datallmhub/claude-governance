@@ -31,10 +31,10 @@ Without structure, Claude Code generates inconsistent code, ignores your convent
 ### JavaScript / TypeScript
 | Stack | Folder | Status |
 |---|---|---|
-| React / TypeScript only | `react-only/` | 🔜 Coming |
-| Angular only | `angular-only/` | 🔜 Coming |
-| Vue.js only | `vue-only/` | 🔜 Coming |
-| Next.js (full-stack) | `nextjs/` | 🔜 Coming |
+| React / TypeScript only | [`react-only/`](./react-only/) | ✅ Ready |
+| Angular only | [`angular-only/`](./angular-only/) | ✅ Ready |
+| Vue.js only | [`vue-only/`](./vue-only/) | ✅ Ready |
+| Next.js (full-stack) | [`nextjs/`](./nextjs/) | ✅ Ready |
 | Node.js (Express) + React | `node-express-react/` | 🔜 Coming |
 | Node.js (Express) + Angular | `node-express-angular/` | 🔜 Coming |
 | Node.js (NestJS) + React | `nestjs-react/` | 🔜 Coming |
