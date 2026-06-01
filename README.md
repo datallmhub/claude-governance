@@ -35,6 +35,8 @@ Without structure, Claude Code generates inconsistent code, ignores your convent
 | Angular only | `angular-only/` | 🔜 Coming |
 | Vue.js only | `vue-only/` | 🔜 Coming |
 | Next.js (full-stack) | `nextjs/` | 🔜 Coming |
+| Node.js (Express) + React | `node-express-react/` | 🔜 Coming |
+| Node.js (Express) + Angular | `node-express-angular/` | 🔜 Coming |
 | Node.js (NestJS) + React | `nestjs-react/` | 🔜 Coming |
 | Node.js (NestJS) + Angular | `nestjs-angular/` | 🔜 Coming |
 
