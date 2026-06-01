@@ -2,6 +2,7 @@
 
 Ready-to-use governance templates for Claude Code, organized by tech stack.
 Copy the folder matching your stack, adapt it to your project, and Claude Code applies your rules automatically on every session.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/f14ee7c0-07ca-42a9-9e08-6c011242dfa8" />
 
 ---
 
