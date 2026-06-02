@@ -61,6 +61,16 @@ Without structure, Claude Code generates inconsistent code, ignores your convent
 | Go (Gin / Echo) + React | `go-react/` | 🔜 Coming |
 | Go API only | `go-only/` | 🔜 Coming |
 
+### PHP
+| Stack | Folder | Status |
+|---|---|---|
+| Laravel + React | `laravel-react/` | 🔜 Coming |
+| Laravel + Vue.js | `laravel-vue/` | 🔜 Coming |
+| Laravel + Angular | `laravel-angular/` | 🔜 Coming |
+| Laravel API only | `laravel-only/` | 🔜 Coming |
+| Symfony + React | `symfony-react/` | 🔜 Coming |
+| Symfony API only | `symfony-only/` | 🔜 Coming |
+
 ---
 
 ## What's inside each template
