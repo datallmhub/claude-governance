@@ -43,7 +43,7 @@ Without structure, Claude Code generates inconsistent code, ignores your convent
 ### Python
 | Stack | Folder | Status |
 |---|---|---|
-| Python (FastAPI) + React | `python-fastapi-react/` | 🔜 Coming |
+| Python (FastAPI) + React | [`python-fastapi-react/`](./python-fastapi-react/) | ✅ Ready |
 | Python (FastAPI) + Angular | `python-fastapi-angular/` | 🔜 Coming |
 | Python (Django) + React | `python-django-react/` | 🔜 Coming |
 | Python (FastAPI) API only | `python-fastapi-only/` | 🔜 Coming |
