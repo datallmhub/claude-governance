@@ -9,6 +9,18 @@
 - Always read the full file before modifying it.
 - Always verify compilation (`mvn verify` or `npm run typecheck`) before declaring a task done.
 - When intent is unclear, ask ONE targeted question.
+- If blocked after 2 failed attempts on the same problem, stop and tell the user to run `/model claude-opus-4-8`. Do not attempt a third fix.
+
+## Claude Code session best practices
+
+Context management:
+- `/compact` — compress conversation when context grows long (long sessions, big diffs)
+- `/clear` — reset session entirely when switching to an unrelated task
+
+Model cost optimization (manual — no automatic routing):
+- `/model claude-haiku-4-5` — documentation, javadoc, renaming, simple syntax fixes
+- `/model claude-sonnet-4-6` — feature development, bug fixes, architecture (default)
+- `/model claude-opus-4-8` — blocked problems, complex refactoring, security review
 
 ## Local environment
 - Backend on port 8080, frontend on port 5173.

@@ -145,7 +145,82 @@ Active level: JUNIOR
 | `JUNIOR` | Full explanations, step-by-step, common pitfalls flagged, code with full context |
 | `SENIOR` | Concise, solution-first, 3 sentences max per concept |
 | `EXPERT` | No explanations unless asked, minimal code snippets, precise vocabulary |
-| `TECH_LEAD` | Architecture framing, team impact, doc update requirements, RFC triggers |
+| `TECH_LEAD` | 1 sentence max per concept, code only, no basic definitions, assumes senior reader |
+
+---
+
+## GovEval — Validate your governance config
+
+Governance rules are only useful if Claude actually follows them.
+**GovEval** is a test framework that validates AI behavior against your `CLAUDE.md` configuration.
+
+```
+Scenario prompt (natural developer request)
+      ↓
+Generator : Claude CLI — loads your CLAUDE.md + .claude/rules/ automatically
+      ↓
+Judge     : Mistral Large (independent model family — no shared bias)
+            evaluates only the rule under test, scores 0–100
+      ↓
+PASS if score ≥ 80
+```
+
+It tests the 4 promises of the governance system:
+
+| Category | What it validates |
+|----------|-------------------|
+| `architecture` | Layer separation, public_id in URLs, DTO separation |
+| `security` | No IDOR, no raw SQL, no hardcoded secrets |
+| `cost_control` | Minimal diffs, model suggestions, no boilerplate |
+| `developer_level` | Response style adapted to JUNIOR vs TECH_LEAD |
+
+### Choosing a judge model
+
+The judge must come from a **different model family** than the generator to avoid bias.
+Claude generates — the judge must not be Claude.
+
+| Option | Model | Setup | Best for |
+|--------|-------|-------|----------|
+| **Mistral Large** (recommended) | `mistral-large-latest` | `MISTRAL_API_KEY` env var | Accuracy, strict scoring |
+| **Local (Ollama)** | `qwen2.5:14b` or similar | `ollama pull qwen2.5:14b` | No API cost, offline |
+
+To switch judge, change `JUDGE_MODEL` in `runner.py` and update the client accordingly.
+
+### Run
+
+```bash
+cd java-react/tests
+pip install -r requirements.txt
+
+# Mistral (recommended)
+export MISTRAL_API_KEY=sk-...
+python runner.py
+
+# or: local Ollama judge (no API key needed)
+ollama pull qwen2.5:14b
+# set JUDGE_MODEL = "qwen2.5:14b" and use Ollama HTTP API in runner.py
+python runner.py                        # all scenarios
+python runner.py --category security    # one category
+python runner.py --scenario SEC-01      # one scenario
+```
+
+Currently implemented for `java-react/`. See [`java-react/tests/`](./java-react/tests/) for full details.
+
+### GovEval v1 vs v2
+
+**v1 (current)** — Compliance testing: validates that Claude follows a single rule in a single prompt.
+
+**v2 (roadmap)** — Governance system testing: validates that Claude correctly navigates the rule hierarchy.
+
+| Test type | Question | Status |
+|-----------|----------|--------|
+| Compliance | Does Claude follow rule X? | ✅ v1 |
+| Rule hierarchy | When global says OOP and project says Functional, does project win? | 🔜 v2 |
+| Scoped boundary | Does `frontend.md` apply to `src/components/` but NOT `src/services/`? | 🔜 v2 |
+| Rule recall | At turn 15 of a long session, does Claude still apply `public_id UUID`? | 🔜 v2 |
+
+> Following a rule ≠ managing a system of rules.
+> v2 tests the second, which is the real challenge of Claude Code governance.
 
 ---
 

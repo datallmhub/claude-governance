@@ -1,158 +1,131 @@
 # TaskFlow — Claude Code Governance
 
-## Project Overview
+## Project Context
 
-**TaskFlow** is a collaborative project management SaaS platform.
-It lets teams create projects, manage tasks in real time, track progress,
-and generate activity reports.
-
-- **Target users**: product teams, developers, project managers
-- **Value**: centralized task tracking with real-time notifications and automated reporting
-- **Model**: multi-tenant — each organization is isolated at the data level
+Multi-tenant SaaS — Spring Boot 3.3 / React 18.
+Each organization is strictly isolated at the data level.
+Developer level: see `dev-level.md`.
 
 ---
 
-## Tech Stack
+## CRITICAL — Non-negotiable
 
-### Backend
-| Component    | Technology                       |
-|--------------|----------------------------------|
-| Runtime      | Java 17                          |
-| Framework    | Spring Boot 3.3                  |
-| Security     | Spring Security 6 + JWT (JJWT)   |
-| Persistence  | Spring Data JPA + Hibernate 6    |
-| Database     | PostgreSQL 16                    |
-| Migrations   | Flyway                           |
-| Build        | Maven 3.9                        |
-| Tests        | JUnit 5, Mockito, Testcontainers |
+Violations here are bugs, not style issues.
 
-### Frontend
-| Component    | Technology               |
-|--------------|--------------------------|
-| Framework    | React 18                 |
-| Language     | TypeScript 5             |
-| Bundler      | Vite 5                   |
-| UI Components| shadcn/ui + Tailwind CSS |
-| Global state | Zustand                  |
-| Data fetching| TanStack Query v5        |
-| Routing      | React Router v6          |
-| Tests        | Vitest + Testing Library |
-
-### Infrastructure
-- Docker + Docker Compose (local dev)
-- CI/CD: GitHub Actions
-- Deploy: Railway (backend) + Vercel (frontend)
+- **Tenant isolation**: every repository query MUST filter by `organizationId`. Never query by entity ID alone.
+- **organizationId source**: extract from JWT claims (security context) only. Never from request body, path variable, or query parameter.
+- **Public IDs only**: use `publicId` (UUID) in all URLs and API responses. Never expose `id` (Long).
+- **No secrets in code**: tokens, passwords, keys always via `@Value` or `@ConfigurationProperties`.
+- **Flyway immutability**: never edit an existing migration. Always create a new versioned script.
 
 ---
 
-## Directory Architecture
+## Backend Rules
 
-```
-taskflow/
-├── backend/                    # Spring Boot application
-│   └── src/
-│       └── main/java/com/taskflow/
-│           ├── config/         # Spring beans (Security, CORS, JPA)
-│           ├── controller/     # REST controllers (@RestController)
-│           ├── service/        # Business logic (@Service)
-│           ├── repository/     # Data access (JpaRepository)
-│           ├── domain/         # JPA entities + value objects
-│           ├── dto/            # Transfer objects (Request/Response)
-│           ├── exception/      # Business exceptions + global handler
-│           └── security/       # JWT filter, UserDetails, AuthService
-│
-├── frontend/                   # React application
-│   └── src/
-│       ├── components/         # Reusable UI components
-│       ├── pages/              # Pages (one per route)
-│       ├── hooks/              # Custom React hooks
-│       ├── store/              # Zustand stores
-│       ├── api/                # HTTP clients (TanStack Query functions)
-│       ├── types/              # Shared TypeScript types
-│       └── lib/                # Pure utilities
-│
-└── infra/
-    ├── docker-compose.yml
-    └── migrations/             # Flyway scripts (V__description.sql)
-```
+**Architecture**
+- `controller → service → repository`. No layer skipping.
+- Controllers may: validate requests, map DTOs, extract auth context, call services.
+- Controllers must not: access repositories, implement business rules, manage transactions.
 
-**Golden rule**: each layer only talks to the layer directly below it.
-`controller → service → repository`. No layer skipping.
+**DTOs**
+- Separate `*Request` and `*Response` records for every endpoint.
+- Entities never leave the persistence layer — services expose DTOs only.
+- Naming: `CreateTaskRequest`, `TaskResponse`, `UpdateTaskRequest`.
 
----
+**Exceptions**
+- All business exceptions extend `TaskFlowException`.
+- Handled exclusively in `GlobalExceptionHandler`.
 
-## Development Rules
+**Data access**
+- Collection endpoints must return `Page<T>` or `Slice<T>`. Never unbounded `List<T>`.
+- `FetchType.LAZY` on all `@OneToMany`. Use explicit JPQL fetch joins.
+- Every `RestTemplate`/`WebClient`: 5s connect timeout, 30s read timeout.
 
-### Global
-- Always use `public_id` (UUID) in URLs and API responses. Never expose internal sequential IDs.
-- Always validate input at the system boundary (controllers on the backend, forms on the frontend).
-- Always configure a timeout on every external HTTP call.
-- Always sanitize logs: never include PII (emails, names, tokens).
+**Authorization**
+- Authentication does not imply authorization.
+- Every service method accessing business data must verify ownership and permissions against the current organization and user.
 
-### Backend
-- Always use typed generics (`List<Task>`, not raw `List`).
-- Controllers hold no business logic — delegate everything to the service.
-- Always use distinct DTOs for Request and Response. Never expose a JPA entity directly.
-- Always extend `TaskFlowException` for business exceptions, handled in `GlobalExceptionHandler`.
-- Always place complex JPQL queries in the repository, never in the service.
-- Always set timeouts on `RestTemplate` / `WebClient`: 5s connect, 30s read.
-
-### Frontend
-- Always use `unknown` + type guard instead of `any`.
-- Always use shadcn/ui components instead of raw HTML elements.
-- Always place fetch logic in `/api`, never directly in a component.
-- Global state goes in `/store`. Local state stays in the component.
-- Always handle `isLoading` and `isError` states in components that fetch data.
-
----
-
-## Commands
-
-### Backend
-```bash
-cd backend && mvn spring-boot:run     # Start backend
-mvn clean package -DskipTests         # Full build
-mvn test                              # Unit tests
-mvn verify -Pintegration              # Integration tests (requires Docker)
-mvn checkstyle:check                  # Linting
-mvn jacoco:report                     # Coverage report
-```
-
-### Frontend
-```bash
-cd frontend && npm run dev            # Start frontend (dev)
-npm run build                         # Production build
-npm run test                          # Tests
-npm run typecheck                     # Type check
-npm run lint                          # Lint
-```
-
-### Infrastructure
-```bash
-docker compose up -d                                    # Start full environment
-docker compose down -v && docker compose up -d postgres # Reset database
+**Correct repository signature example**
+```java
+Page<Task> findByProjectPublicIdAndOrganizationId(
+    UUID projectPublicId, Long organizationId, Pageable pageable);
 ```
 
 ---
 
-## Known Constraints & Gotchas
+## Frontend Rules
 
-### Security
-- JWT tokens expire after **15 minutes** (access) and **7 days** (refresh).
-  The frontend handles silent refresh via the Axios interceptor in `/api/client.ts`.
-- CORS is configured for `localhost:5173` in dev and `taskflow.app` in prod.
-  Never use `allowedOrigins("*")` in production.
+- `unknown` + type guard — never `any`.
+- Fetch logic in `/api` only — never inside a component or hook.
+- shadcn/ui components everywhere — no raw HTML elements.
+- Always handle `isLoading` and `isError` in data-fetching components.
+- Global state → `/store`. Local state → component.
 
-### Database
-- The multi-tenant schema uses `organization_id` on all business tables.
-  Every query must filter on `organization_id` — verify via integration tests.
-- Flyway migrations are immutable. Always create a new script instead of editing an existing one.
-- Migration order is critical: FK constraints must respect table creation order.
+---
 
-### Performance
-- Task lists can exceed 10,000 rows. Always paginate with `Pageable`.
-- Always use `FetchType.LAZY` on `@OneToMany` relations. Use explicit fetch joins.
+## Security Rules
 
-### Misc
-- WebSocket (real-time notifications) uses STOMP on `/ws`. Do not mix with REST endpoints.
-- Email notifications go through an async job (`@Async`). Never call the mail service synchronously from a controller.
+**Validation**
+- Backend: `@Valid` + Bean Validation at controller layer.
+- Frontend: Zod + react-hook-form at form layer.
+
+**Logging — never log**
+`email`, `accessToken`, `refreshToken`, `password`, user full name.
+
+**CORS**
+- Dev: `localhost:5173`. Prod: `taskflow.app`. Never `allowedOrigins("*")`.
+
+---
+
+## Testing Rules
+
+- Service layer: JUnit 5 + Mockito.
+- Repository layer: Testcontainers integration tests.
+- Every repository integration test must verify organization isolation (cross-tenant data must not be accessible).
+
+---
+
+## Modification Rules
+
+| Situation | Action |
+|-----------|--------|
+| Change < 10 lines | Targeted diff only — never rewrite the full file |
+| New DB change needed | New `V{n}__description.sql` — never edit existing migration |
+| New file | Only if no existing file can be extended |
+
+---
+
+## Cost Optimization
+
+Model switching is manual. Suggest `/model` when the task warrants it:
+
+| Task type | Suggestion |
+|-----------|------------|
+| Docs, Javadoc, renaming, simple syntax fixes | Suggest `/model claude-haiku-4-5` |
+| Feature dev, bug fix, architecture (default) | Stay on `claude-sonnet-4-6` |
+| Blocked after 2 attempts, security review | Suggest `/model claude-opus-4-8` |
+
+- If stuck after 2 failed attempts on the same problem: stop and tell the user to run `/model claude-opus-4-8`.
+- Never suggest haiku for tasks involving entities, migrations, security, or multi-tenancy.
+
+---
+
+## Available Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/gov-check` | Audit current file against governance rules |
+| `/security-review` | Security checklist on current file |
+| `/scaffold <domain>` | Generate complete CRUD feature (entity, DTOs, service, controller, migration) |
+| `/new-migration <description>` | Generate next Flyway migration script |
+
+---
+
+## Known Gotchas
+
+- **JWT expiry**: access token = 15 min, refresh token = 7 days. Silent refresh handled by Axios interceptor in `/api/client.ts`. Do not add manual refresh logic elsewhere.
+- **WebSocket**: real-time notifications use STOMP on `/ws`. Never mix with REST endpoints or add REST logic inside STOMP handlers.
+- **Email**: notifications go through `@Async` jobs. Never call the mail service synchronously from a controller — it will block the request thread.
+- **Flyway order**: migration FK constraints must respect table creation order. Always check dependencies before creating a new script.
+- **Pagination**: task lists can exceed 10,000 rows. Never return unbounded `List<T>` from collection endpoints — always use `Page<T>` or `Slice<T>`.
+- **CORS**: configured for `localhost:5173` (dev) and `taskflow.app` (prod) only. Never use `allowedOrigins("*")` in production.

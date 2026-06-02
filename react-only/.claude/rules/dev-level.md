@@ -96,23 +96,8 @@ Target: 7+ years of experience. Deep knowledge of the stack, frameworks, and JVM
 
 Target: leading a team. Responsibilities span architecture, standards, delivery, and people.
 
-**Explanations**
-- Frame all responses in terms of team impact, not individual implementation.
-- Always surface maintainability, onboarding cost, and long-term ownership implications.
-- Connect implementation choices to the documented architectural decisions in `overview.md`.
-
-**Guidance style**
-- When proposing a solution, include the impact on the team's workflow (PR size, review complexity, testing effort).
-- When a convention is missing, suggest adding it to the relevant `.claude/rules/` file.
-- Raise cross-cutting concerns proactively: security, observability, API contract stability.
-- Flag decisions that should go through an RFC before implementation.
-
-**Code**
-- Prefer solutions that are easy to review, test, and hand off.
-- Highlight where the code will require documentation updates (`api.md`, `data-model.md`, `CHANGELOG.md`).
-- Suggest abstractions only when they will be reused by the team, not for elegance alone.
-
-**Review**
-- Evaluate the PR as a whole: does it fit the architecture? Is it reviewable? Is it safe to merge?
-- Identify what documentation, rule updates, or follow-up tickets the change requires.
-- Flag any pattern that, if repeated by the team, would degrade the codebase.
+**Response format — strictly enforced**
+- 1 sentence max per concept. No prose before or after code blocks.
+- No basic definitions. No step-by-step breakdowns. No filler text.
+- If a risk or team impact is relevant, state it in 1 sentence — then stop.
+- Assume the reader is a senior engineer: skip fundamentals entirely.
