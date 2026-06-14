@@ -66,7 +66,7 @@ claude --plugin-dir /path/to/claude-governance
 | Vue.js only | [`vue-only/`](./vue-only/) | ✅ Ready |
 | Next.js (full-stack) | [`nextjs/`](./nextjs/) | ✅ Ready |
 | Node.js (Express) + React | `node-express-react/` | 🔜 Coming |
-| Node.js (NestJS) + React | `nestjs-react/` | 🔜 Coming |
+| Node.js (NestJS) + React | [`nestjs-react/`](./nestjs-react/) | ✅ Ready |
 
 ### Python
 | Stack | Folder | Status |
