@@ -3,6 +3,8 @@
 Ready-to-use governance templates for Claude Code, organized by tech stack.
 Rules load automatically on every session: no prompting required.
 
+If this saves you time, consider giving it a ⭐: it helps others find the project.
+
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/f14ee7c0-07ca-42a9-9e08-6c011242dfa8" />
 
 ---
@@ -10,8 +12,6 @@ Rules load automatically on every session: no prompting required.
 ## Why this exists
 
 Without structure, Claude Code generates inconsistent code, ignores your conventions, and repeats the same mistakes across sessions. This project fixes that with a hierarchy of `CLAUDE.md` files that load automatically: no prompting required.
-
-If this saves you time, consider giving it a ⭐: it helps others find the project.
 
 **What you get:**
 - Consistent code that respects your architecture and naming conventions
