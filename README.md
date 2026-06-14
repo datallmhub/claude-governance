@@ -1,7 +1,7 @@
 # Claude Code Governance Templates
 
 Ready-to-use governance templates for Claude Code, organized by tech stack.
-Rules load automatically on every session — no prompting required.
+Rules load automatically on every session: no prompting required.
 
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/f14ee7c0-07ca-42a9-9e08-6c011242dfa8" />
 
@@ -9,14 +9,14 @@ Rules load automatically on every session — no prompting required.
 
 ## Why this exists
 
-Without structure, Claude Code generates inconsistent code, ignores your conventions, and repeats the same mistakes across sessions. This project fixes that with a hierarchy of `CLAUDE.md` files that load automatically — no prompting required.
+Without structure, Claude Code generates inconsistent code, ignores your conventions, and repeats the same mistakes across sessions. This project fixes that with a hierarchy of `CLAUDE.md` files that load automatically: no prompting required.
 
-If this saves you time, consider giving it a ⭐ — it helps others find the project.
+If this saves you time, consider giving it a ⭐: it helps others find the project.
 
 **What you get:**
 - Consistent code that respects your architecture and naming conventions
 - Security rules enforced by default (no IDOR, no raw SQL, no hardcoded secrets)
-- Cost control — precise diffs instead of full rewrites, right model for the right task
+- Cost control: precise diffs instead of full rewrites, right model for the right task
 - Behavior adapted to the developer's experience level (Junior → Tech Lead)
 
 ---
@@ -30,7 +30,7 @@ If this saves you time, consider giving it a ⭐ — it helps others find the pr
 /plugin install claude-governance
 ```
 
-Then run `/setup` in any project — select your stack, governance files are copied automatically, and rules inject at every session start.
+Then run `/setup` in any project: select your stack, governance files are copied automatically, and rules inject at every session start.
 
 **Local / development:**
 
@@ -89,16 +89,16 @@ claude --plugin-dir /path/to/claude-governance
 
 ```
 <stack>/
-├── CLAUDE.md                    # Project context — always loaded
+├── CLAUDE.md                    # Project context: always loaded
 ├── CLAUDE.local.md.example      # Personal overrides (copy locally, never commit)
 ├── .claude/
-│   ├── settings.json            # SessionStart hook — injects rules at session start
+│   ├── settings.json            # SessionStart hook: injects rules at session start
 │   ├── rules/
-│   │   ├── backend.md           # Backend rules — scoped to backend files only
-│   │   ├── frontend.md          # Frontend rules — scoped to frontend files only
+│   │   ├── backend.md           # Backend rules: scoped to backend files only
+│   │   ├── frontend.md          # Frontend rules: scoped to frontend files only
 │   │   ├── database.md          # DB / migration rules
 │   │   ├── testing.md           # Testing standards
-│   │   ├── security.md          # Security rules — loaded on every file
+│   │   ├── security.md          # Security rules: loaded on every file
 │   │   ├── governance.md        # Git, PR, versioning, release process
 │   │   └── dev-level.md         # Behavior by experience level
 │   └── architecture/
@@ -125,17 +125,17 @@ claude --plugin-dir /path/to/claude-governance
 
 `security.md` loads on every file automatically. It enforces:
 
-- **No IDOR** — `public_id UUID` in all URLs, never internal sequential IDs
-- **No hardcoded secrets** — all credentials via environment variables
-- **Safe tokens** — JWT in memory, refresh token in `HttpOnly; Secure` cookie
-- **Injection prevention** — parameterized queries, input validated at system boundary
-- **CORS locked down** — explicit origin whitelist, never `allowedOrigins("*")`
+- **No IDOR**: `public_id UUID` in all URLs, never internal sequential IDs
+- **No hardcoded secrets**: all credentials via environment variables
+- **Safe tokens**: JWT in memory, refresh token in `HttpOnly; Secure` cookie
+- **Injection prevention**: parameterized queries, input validated at system boundary
+- **CORS locked down**: explicit origin whitelist, never `allowedOrigins("*")`
 
 ---
 
 ## Developer Experience Levels
 
-One setting in `dev-level.md` — Claude adapts its verbosity automatically.
+One setting in `dev-level.md`: Claude adapts its verbosity automatically.
 
 | Level | Behavior |
 |---|---|
@@ -146,7 +146,7 @@ One setting in `dev-level.md` — Claude adapts its verbosity automatically.
 
 ---
 
-## GovEval — Validate your governance
+## GovEval: Validate your governance
 
 Rules are useful only if Claude actually follows them. GovEval tests this automatically.
 
@@ -170,4 +170,4 @@ Requires `MISTRAL_API_KEY`. See [`java-react/tests/`](./java-react/tests/) for f
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guide.
 
-Pick an open [`new-stack`](https://github.com/datallmhub/claude-governance/labels/new-stack) issue — each one is a self-contained task with clear acceptance criteria.
+Pick an open [`new-stack`](https://github.com/datallmhub/claude-governance/labels/new-stack) issue: each one is a self-contained task with clear acceptance criteria.
