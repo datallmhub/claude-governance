@@ -188,17 +188,22 @@ To switch judge, change `JUDGE_MODEL` in `runner.py` and update the client accor
 
 ### Run
 
+**Via slash command (recommended):**
+
+```bash
+/gov-eval                          # all scenarios
+/gov-eval --category security      # one category
+/gov-eval --scenario SEC-01        # one scenario
+```
+
+Requires `MISTRAL_API_KEY` to be set and dependencies installed (`pip install -r <stack>/tests/requirements.txt`).
+
+**Directly:**
+
 ```bash
 cd java-react/tests
 pip install -r requirements.txt
-
-# Mistral (recommended)
 export MISTRAL_API_KEY=sk-...
-python runner.py
-
-# or: local Ollama judge (no API key needed)
-ollama pull qwen2.5:14b
-# set JUDGE_MODEL = "qwen2.5:14b" and use Ollama HTTP API in runner.py
 python runner.py                        # all scenarios
 python runner.py --category security    # one category
 python runner.py --scenario SEC-01      # one scenario
