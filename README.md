@@ -10,6 +10,8 @@ Copy the folder matching your stack, adapt it to your project, and Claude Code a
 
 Without structure, Claude Code generates inconsistent code, ignores your conventions, and repeats the same mistakes across sessions. This project fixes that with a hierarchy of `CLAUDE.md` files that load automatically — no prompting required.
 
+If this saves you time, consider giving it a ⭐ — it helps others find the project.
+
 **What you get:**
 - Consistent code that respects your architecture and naming conventions
 - Security rules enforced by default (no IDOR, no raw SQL, no hardcoded secrets)
