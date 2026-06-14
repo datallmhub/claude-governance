@@ -224,13 +224,35 @@ Currently implemented for `java-react/`. See [`java-react/tests/`](./java-react/
 
 ---
 
-## How to use
+## Installation
+
+**Via plugin marketplace (recommended):**
+
+```bash
+/plugin marketplace add datallmhub/claude-governance
+/plugin install claude-governance
+```
+
+Then run `/setup` in any project to initialize the governance system interactively.
+
+**Manual:**
 
 1. Copy the stack folder into your project root.
 2. Update `CLAUDE.md` with your project name, description, and stack versions.
 3. Copy `CLAUDE.local.md.example` → `CLAUDE.local.md` (do not commit).
 4. Set your experience level in `dev-level.md`.
 5. Open Claude Code — the governance system is active immediately.
+
+---
+
+## `/setup` — Interactive stack initialization
+
+Once the plugin is installed, run `/setup` in any project:
+
+1. Select your stack from the list
+2. The governance files are copied into your project
+3. A `.claude-governance` marker is written so the session hook knows which stack is active
+4. On every subsequent session, active rules are injected automatically at startup
 
 ---
 
@@ -247,5 +269,6 @@ Currently implemented for `java-react/`. See [`java-react/tests/`](./java-react/
 
 ## Contributing
 
-PRs welcome — new stack templates especially.
-Each template must include all 7 rule files and follow the same folder structure.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guide.
+
+The fastest way to contribute is to pick an open [`new-stack`](https://github.com/datallmhub/claude-governance/labels/new-stack) issue and follow the template structure from [`java-react/`](./java-react/).
