@@ -235,7 +235,16 @@ Currently implemented for `java-react/`. See [`java-react/tests/`](./java-react/
 
 Then run `/setup` in any project to initialize the governance system interactively.
 
-**Manual:**
+**Local / development:**
+
+```bash
+git clone https://github.com/datallmhub/claude-governance.git
+claude --plugin-dir /path/to/claude-governance
+```
+
+Then run `/setup` to select your stack.
+
+**Manual (no plugin):**
 
 1. Copy the stack folder into your project root.
 2. Update `CLAUDE.md` with your project name, description, and stack versions.
