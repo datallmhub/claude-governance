@@ -23,9 +23,9 @@ Model cost optimization (manual — no automatic routing):
 - `/model claude-opus-4-8` — blocked problems, complex refactoring, security review
 
 ## Local environment
-- Backend on port 3000, frontend on port 5173.
+- Backend on port 3000, frontend on `[your-dev-origin]`.
 - Local config: `backend/.env.local` (ignored by Git).
-- Local database: `taskflow_dev` on PostgreSQL localhost:5432.
+- Local database: `[your-db-name]` on PostgreSQL localhost:5432.
 - Redis on localhost:6379 for Bull queue (optional in dev).
 
 ## Code preferences

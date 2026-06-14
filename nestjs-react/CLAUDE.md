@@ -1,4 +1,4 @@
-# TaskFlow — Claude Code Governance
+# [your-project] — Claude Code Governance
 
 ## Project Context
 
@@ -78,7 +78,7 @@ findByProjectPublicIdAndOrganizationId(
 `email`, `accessToken`, `refreshToken`, `password`, user full name.
 
 **CORS**
-- Dev: `localhost:5173`. Prod: `taskflow.app`. Never `origin: true` or wildcard in production.
+- Dev: `[your-dev-origin]`. Prod: `[your-domain.com]`. Never `origin: true` or wildcard in production.
 
 ---
 
@@ -134,4 +134,4 @@ Model switching is manual. Suggest `/model` when the task warrants it:
 - **Module imports**: if `TasksService` needs `ProjectsService`, import `ProjectsModule` in `TasksModule` — never import the service file directly across modules.
 - **TypeORM migrations**: run `npm run migration:run` after every new migration. `synchronize: true` is forbidden in all environments except local scratch DBs.
 - **Pagination**: task lists can exceed 10,000 rows. Never return unbounded arrays from collection endpoints.
-- **CORS**: configured for `localhost:5173` (dev) and `taskflow.app` (prod) only.
+- **CORS**: configured for `[your-dev-origin]` (dev) and `[your-domain.com]` (prod) only.

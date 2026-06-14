@@ -38,8 +38,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: config.getOrThrow('JWT_SECRET'),
-      issuer: 'taskflow-api',
-      audience: 'taskflow-web',
+      issuer: '[your-app]-api',
+      audience: '[your-app]-web',
     });
   }
 }
