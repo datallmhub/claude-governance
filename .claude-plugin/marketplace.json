@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "claude-governance",
+  "description": "Production-grade governance templates for Claude Code — rules, security, cost control, and dev-level adaptation, organized by tech stack.",
+  "owner": {
+    "name": "datallmhub",
+    "url": "https://github.com/datallmhub"
+  },
+  "plugins": [
+    {
+      "name": "claude-governance",
+      "source": {
+        "source": "github",
+        "repo": "datallmhub/claude-governance"
+      },
+      "description": "Governance templates that make Claude Code follow your architecture, security rules, and team conventions automatically — across Java, Python, Go, .NET, PHP, and JavaScript stacks.",
+      "homepage": "https://github.com/datallmhub/claude-governance",
+      "license": "MIT",
+      "keywords": ["governance", "rules", "architecture", "security", "java", "spring", "react", "python", "go", "dotnet", "laravel"]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "claude-governance",
+  "description": "Production-grade governance templates for Claude Code — rules, security, cost control, and dev-level adaptation, organized by tech stack.",
+  "author": {
+    "name": "datallmhub"
+  },
+  "homepage": "https://github.com/datallmhub/claude-governance",
+  "repository": "https://github.com/datallmhub/claude-governance",
+  "license": "MIT",
+  "commands": "./.claude/commands"
+}
