@@ -155,29 +155,17 @@ It does not test Claude in isolation. It tests Claude **as configured by this re
 The developer prompt never repeats the rules:
 
 ```
-Developer request
-"Add an endpoint to fetch invoices."
-                          │
-                          ▼
-            Claude Code Runtime
-        (CLAUDE.md + .claude/rules/)
-           loaded automatically
-                          │
-                          ▼
-              Generated solution
-      Tenant isolation applied
-      public_id used in URLs
-      Request/Response DTOs
-      No raw SQL
-      Tests generated
-                          │
-                          ▼
-              Independent Judge
-      Evaluates only the rule under test
-                          │
-                          ▼
-                   PASS / FAIL ?
+Developer request → Claude Code runtime (rules loaded silently) → Generated code → Judge → PASS / FAIL
 ```
+
+**Example — `SEC-01`:**
+
+| Step | Result |
+|---|---|
+| Prompt | "Create GET /tasks" |
+| Generated | `organizationId` read from JWT, not the request |
+| Judge | Mistral Large — isolation verified |
+| Result | ✅ PASS — 100/100 |
 
 The judge (Mistral Large) is a different model family than the generator (Claude), so it isn't grading its own work.
 
