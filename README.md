@@ -155,15 +155,28 @@ It does not test Claude in isolation. It tests Claude **as configured by this re
 The developer prompt never repeats the rules:
 
 ```
-Developer asks: "Add an endpoint to fetch invoices."
-                          ↓
-Governance config (CLAUDE.md, .claude/rules/) loads silently
-                          ↓
-Claude generates code — tenant isolation, public_id, DTOs, no raw SQL, applied without being asked
-                          ↓
-Independent judge scores the output against the rule under test
-                          ↓
-                      PASS / FAIL
+Developer request
+"Add an endpoint to fetch invoices."
+                          │
+                          ▼
+            Claude Code Runtime
+        (CLAUDE.md + .claude/rules/)
+           loaded automatically
+                          │
+                          ▼
+              Generated solution
+      Tenant isolation applied
+      public_id used in URLs
+      Request/Response DTOs
+      No raw SQL
+      Tests generated
+                          │
+                          ▼
+              Independent Judge
+      Evaluates only the rule under test
+                          │
+                          ▼
+                   PASS / FAIL ?
 ```
 
 The judge (Mistral Large) is a different model family than the generator (Claude), so it isn't grading its own work.
