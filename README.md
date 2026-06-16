@@ -148,13 +148,25 @@ One setting in `dev-level.md`: Claude adapts its verbosity automatically.
 
 ## GovEval: Validate your governance
 
-Rules are useful only if Claude actually follows them. GovEval tests this automatically.
+**GovEval is to governance rules what unit tests are to code.**
+
+It does not test Claude in isolation. It tests Claude **as configured by this repo** — `CLAUDE.md` + `.claude/rules/` + dev-level + everything else loaded automatically.
+
+The developer prompt never repeats the rules:
 
 ```
-Natural prompt → Claude (generator) → Mistral Large (judge) → PASS / FAIL
+Developer asks: "Add an endpoint to fetch invoices."
+                          ↓
+Governance config (CLAUDE.md, .claude/rules/) loads silently
+                          ↓
+Claude generates code — tenant isolation, public_id, DTOs, no raw SQL, applied without being asked
+                          ↓
+Independent judge scores the output against the rule under test
+                          ↓
+                      PASS / FAIL
 ```
 
-The judge comes from a different model family to avoid self-evaluation bias.
+The judge (Mistral Large) is a different model family than the generator (Claude), so it isn't grading its own work.
 
 ```bash
 /gov-eval                          # all scenarios
@@ -163,6 +175,8 @@ The judge comes from a different model family to avoid self-evaluation bias.
 ```
 
 Requires `MISTRAL_API_KEY`. See [`java-react/tests/`](./java-react/tests/) for full details.
+
+**Run it on a schedule, not just once.** A rule that passes today can silently break after a model update, even with no changes to `CLAUDE.md`. Re-run GovEval on every PR touching `.claude/rules/`, and periodically (e.g. every 2 weeks) to catch drift from model updates.
 
 ---
 
