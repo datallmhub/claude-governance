@@ -17,6 +17,7 @@ Initialize claude-governance for the current project.
 | `vue-only` | Vue 3 + TypeScript only |
 | `nextjs` | Next.js 14+ (full-stack) |
 | `python-fastapi-react` | Python (FastAPI) + React |
+| `nestjs-react` | Node.js (NestJS) + React |
 
 ## Steps
 
@@ -43,4 +44,4 @@ Once the user selects a stack (e.g. `java-react`):
 
 - Never overwrite `CLAUDE.local.md` if it already exists — it contains personal overrides
 - If `.claude-governance` already exists, show the current stack and ask if the user wants to switch
-- If the stack folder does not exist yet (e.g. `nestjs-react`), inform the user it is not yet available and point them to the open GitHub issue to contribute it
+- If the stack folder does not exist yet, inform the user it is not yet available and point them to the open GitHub issue to contribute it
