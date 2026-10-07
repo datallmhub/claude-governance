@@ -23,6 +23,13 @@
         "ADVANCED_CONSTRUCTS": "server actions, streaming, custom hooks patterns"
       }
     },
+    "model-selection.md": {
+      "source": "model-selection.md",
+      "vars": {
+        "LIGHT_TASKS": "Docs, renaming, simple syntax fixes",
+        "SENSITIVE_AREAS": "Server Actions, data access, authentication, or security"
+      }
+    },
     "security.md": {
       "from_policies": "security",
       "title": "Security Rules — Next.js",

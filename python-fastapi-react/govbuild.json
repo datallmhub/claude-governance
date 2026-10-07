@@ -23,6 +23,13 @@
         "ADVANCED_CONSTRUCTS": "generics, dependency overrides, custom hooks patterns"
       }
     },
+    "model-selection.md": {
+      "source": "model-selection.md",
+      "vars": {
+        "LIGHT_TASKS": "Docstrings, renaming, simple syntax fixes",
+        "SENSITIVE_AREAS": "models, migrations, security, or multi-tenancy"
+      }
+    },
     "security.md": {
       "from_policies": "security",
       "title": "Security Rules — FastAPI + React",

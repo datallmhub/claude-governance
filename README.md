@@ -102,7 +102,8 @@ claude --plugin-dir /path/to/claude-governance
 │   │   ├── security.md          # Generated from policies/security/
 │   │   ├── architecture.md      # Generated from policies/architecture/
 │   │   ├── governance.md        # Generated from core/rules/
-│   │   └── dev-level.md         # Generated from core/rules/
+│   │   ├── dev-level.md         # Generated from core/rules/
+│   │   └── model-selection.md   # Generated from core/rules/
 │   └── architecture/
 │       ├── overview.md          # System architecture + key decisions
 │       ├── api.md               # REST API contract

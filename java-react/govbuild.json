@@ -23,6 +23,13 @@
         "ADVANCED_CONSTRUCTS": "generics bounds, functional composition, custom hooks patterns"
       }
     },
+    "model-selection.md": {
+      "source": "model-selection.md",
+      "vars": {
+        "LIGHT_TASKS": "Docs, Javadoc, renaming, simple syntax fixes",
+        "SENSITIVE_AREAS": "entities, migrations, security, or multi-tenancy"
+      }
+    },
     "security.md": {
       "from_policies": "security",
       "title": "Security Rules — Java / Spring Boot + React",

@@ -23,6 +23,13 @@
         "ADVANCED_CONSTRUCTS": "generic types, functional composition, custom hooks patterns"
       }
     },
+    "model-selection.md": {
+      "source": "model-selection.md",
+      "vars": {
+        "LIGHT_TASKS": "Docs, renaming, simple syntax fixes",
+        "SENSITIVE_AREAS": "authentication flows, security, or state architecture"
+      }
+    },
     "security.md": {
       "from_policies": "security",
       "title": "Security Rules — React / TypeScript",

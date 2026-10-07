@@ -33,7 +33,8 @@ Every stack template must include all of these files:
     │   ├── testing.md           # Testing standards
     │   ├── security.md          # Security rules (loaded on every file)
     │   ├── governance.md        # Git, PR, versioning, release process
-    │   └── dev-level.md        # Response format per experience level
+    │   ├── dev-level.md         # Response format per experience level
+    │   └── model-selection.md   # Which model for which task
     └── architecture/
         ├── overview.md          # System architecture + key decisions
         ├── api.md               # REST API contract
@@ -44,8 +45,8 @@ Use [`java-react/`](./java-react/) as the reference implementation.
 
 ### Generated rule files
 
-`governance.md`, `dev-level.md`, `security.md` and `architecture.md` are **generated** — do not edit
-them inside a stack folder. `governance.md` and `dev-level.md` are compiled from `core/rules/`;
+`governance.md`, `dev-level.md`, `model-selection.md`, `security.md` and `architecture.md` are
+**generated** — do not edit them inside a stack folder. The first three are compiled from `core/rules/`;
 `security.md` and `architecture.md` are rendered from `policies/`, together with the matching
 GitHub Copilot instruction file under `<stack>/.github/instructions/`:
 
