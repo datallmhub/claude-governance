@@ -1,0 +1,23 @@
+name: Governance
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r tools/requirements.txt
+      - name: Verify generated rule files match their source
+        run: tools/govctl check
+      - name: Verify every detector still fires
+        run: tools/selftest.py
+      - name: Evaluate the changed files against the policies
+        run: tools/governance check --changed --base ${{ github.event.pull_request.base.sha || github.event.before }}

@@ -18,7 +18,7 @@ detect:
     message: User input interpolated into SQL — use a parameterized query.
     include: ["**/*.java", "**/*.ts", "**/*.tsx", "**/*.py"]
     pattern: |-
-      (?i)(select|insert into|update|delete from)\b[^;"'`]*("\s*\+|\$\{|%\s*\(|\bformat\()
+      (?i)(["'`])(?:(?!\1).)*\b(select|insert\s+into|update|delete\s+from)\b(?:(?!\1).)*(\1\s*(\+|%|\.format\()|\$\{|\{\w)
   - id: SEC-004.dynamic-eval
     evaluator: regex
     severity: high
