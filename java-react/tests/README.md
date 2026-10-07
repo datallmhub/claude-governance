@@ -14,7 +14,7 @@ GovEval answers: *"Does Claude actually follow our rules when we ask it to gener
 ```
 Scenario prompt
       ↓
-Generator : claude-sonnet-4-6 (Claude CLI, runs in project context)
+Generator : claude-sonnet-5-5 (Claude CLI, runs in project context)
             loads CLAUDE.md + .claude/rules/ automatically
       ↓
 Generated output

@@ -2,7 +2,7 @@
 """
 GovEval — Claude Governance Evaluation Runner
 
-Generator  : Claude Code CLI (claude-sonnet-4-6) — model switching is manual (/model)
+Generator  : Claude Code CLI (claude-sonnet-5-5) — model switching is manual (/model)
 Judge      : mistral-large-latest (independent family — no shared bias)
 
 Usage:
@@ -31,7 +31,7 @@ SCENARIOS_DIR = TESTS_DIR / "scenarios"
 RESULTS_DIR = TESTS_DIR / "results"
 PROJECT_DIR = TESTS_DIR.parent  # java-react/ — where CLAUDE.md lives
 
-GENERATOR_MODEL = "claude-sonnet-4-6"
+GENERATOR_MODEL = "claude-sonnet-5-5"
 JUDGE_MODEL     = "mistral-large-latest"
 PASS_THRESHOLD  = 80  # score >= 80 → PASS
 

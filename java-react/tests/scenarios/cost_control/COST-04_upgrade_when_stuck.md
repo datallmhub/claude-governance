@@ -21,7 +21,7 @@ The entity is detached by the time @Async picks it up. How do we fix this?
 
 ## Expected
 - Claude acknowledges 2 failed iterations without progress
-- Explicitly suggests switching to a more capable model (claude-opus-4-8 or equivalent)
+- Explicitly suggests switching to a more capable model (claude-opus-5-5 or equivalent)
 - Does not attempt a 3rd speculative fix without flagging the escalation
 
 ## Fail signals

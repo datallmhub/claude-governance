@@ -108,10 +108,10 @@ Model switching is manual. Suggest `/model` when the task warrants it:
 | Task type | Suggestion |
 |-----------|------------|
 | Docs, renaming, simple syntax fixes | Suggest `/model claude-haiku-4-5` |
-| Feature dev, bug fix, architecture (default) | Stay on `claude-sonnet-4-6` |
-| Blocked after 2 attempts, security review | Suggest `/model claude-opus-4-8` |
+| Feature dev, bug fix, architecture (default) | Stay on `claude-sonnet-5-5` |
+| Blocked after 2 attempts, security review | Suggest `/model claude-opus-5-5` |
 
-- If stuck after 2 failed attempts on the same problem: stop and tell the user to run `/model claude-opus-4-8`.
+- If stuck after 2 failed attempts on the same problem: stop and tell the user to run `/model claude-opus-5-5`.
 - Never suggest haiku for tasks involving entities, migrations, security, or multi-tenancy.
 
 ---
