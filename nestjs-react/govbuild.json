@@ -1,0 +1,41 @@
+{
+  "stack": "nestjs-react",
+  "rules": {
+    "governance.md": {
+      "source": "governance.md",
+      "vars": {
+        "NIT_EXAMPLE": "Could simplify with optional chaining here.",
+        "MANIFEST_FILES": "`package.json`",
+        "AUDIT_COMMANDS": "`npm audit`",
+        "VERSION_FILES": "root and workspace `package.json` files"
+      }
+    },
+    "dev-level.md": {
+      "source": "dev-level.md",
+      "vars": {
+        "DEV_LEVEL": "TECH_LEAD",
+        "JUNIOR_PITFALLS": "forgetting `@Injectable()`, importing services across modules, mutating the query cache directly",
+        "FRAMEWORK_IDIOMS": "NestJS decorators, React hooks",
+        "IDIOMATIC_EXTRA": "",
+        "RUNTIME_INTERNALS": "NestJS internals, TypeORM, and React",
+        "DOC_REFERENCES": "NestJS documentation or RFCs",
+        "ADVANCED_CONSTRUCTS": "custom decorators, dynamic modules, query key factories"
+      }
+    },
+    "backend.md": {
+      "own": true
+    },
+    "database.md": {
+      "own": true
+    },
+    "frontend.md": {
+      "own": true
+    },
+    "security.md": {
+      "own": true
+    },
+    "testing.md": {
+      "own": true
+    }
+  }
+}

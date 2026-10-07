@@ -42,6 +42,21 @@ Every stack template must include all of these files:
 
 Use [`java-react/`](./java-react/) as the reference implementation.
 
+### Generated rule files
+
+`governance.md` and `dev-level.md` are **generated** — do not edit them inside a stack folder.
+They are compiled from `core/rules/` so a governance rule is written once and applies to every stack:
+
+```bash
+tools/govctl build           # regenerate every stack
+tools/govctl build --stack java-react
+tools/govctl check           # fail if a generated file was hand-edited (runs in CI)
+```
+
+Stack-specific wording comes from the `vars` declared in `<stack>/govbuild.json`, and a stack
+needing a whole section rewritten declares an `overlay` file whose `##` sections replace the core's.
+Adding a rule that applies everywhere means editing `core/rules/`, then running `tools/govctl build`.
+
 ### 3. Rules quality bar
 
 Rules must be:

@@ -1,0 +1,41 @@
+{
+  "stack": "java-react",
+  "rules": {
+    "governance.md": {
+      "source": "governance.md",
+      "vars": {
+        "NIT_EXAMPLE": "Could simplify with a stream here.",
+        "MANIFEST_FILES": "`pom.xml` and `package.json`",
+        "AUDIT_COMMANDS": "`mvn dependency-check:check` and `npm audit`",
+        "VERSION_FILES": "`pom.xml` / `package.json`"
+      }
+    },
+    "dev-level.md": {
+      "source": "dev-level.md",
+      "vars": {
+        "DEV_LEVEL": "TECH_LEAD",
+        "JUNIOR_PITFALLS": "forgetting `@Transactional`, mutating state directly in React",
+        "FRAMEWORK_IDIOMS": "Spring annotations, React hooks",
+        "IDIOMATIC_EXTRA": " Method chaining and streams are fine.",
+        "RUNTIME_INTERNALS": "the stack, frameworks, and JVM/V8 internals",
+        "DOC_REFERENCES": "RFCs, JEPs, or official documentation",
+        "ADVANCED_CONSTRUCTS": "generics bounds, functional composition, custom hooks patterns"
+      }
+    },
+    "backend.md": {
+      "own": true
+    },
+    "database.md": {
+      "own": true
+    },
+    "frontend.md": {
+      "own": true
+    },
+    "security.md": {
+      "own": true
+    },
+    "testing.md": {
+      "own": true
+    }
+  }
+}

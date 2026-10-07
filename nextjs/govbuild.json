@@ -1,0 +1,41 @@
+{
+  "stack": "nextjs",
+  "rules": {
+    "governance.md": {
+      "source": "governance.md",
+      "vars": {
+        "NIT_EXAMPLE": "Could simplify with optional chaining here.",
+        "MANIFEST_FILES": "`package.json`",
+        "AUDIT_COMMANDS": "`npm audit`",
+        "VERSION_FILES": "`package.json`"
+      }
+    },
+    "dev-level.md": {
+      "source": "dev-level.md",
+      "vars": {
+        "DEV_LEVEL": "SENIOR",
+        "JUNIOR_PITFALLS": "marking a component as a client component when a server component suffices, mutating state directly",
+        "FRAMEWORK_IDIOMS": "Next.js routing conventions, React hooks",
+        "IDIOMATIC_EXTRA": "",
+        "RUNTIME_INTERNALS": "Next.js internals, React Server Components, and the Node runtime",
+        "DOC_REFERENCES": "Next.js documentation or RFCs",
+        "ADVANCED_CONSTRUCTS": "server actions, streaming, custom hooks patterns"
+      }
+    },
+    "backend.md": {
+      "own": true
+    },
+    "database.md": {
+      "own": true
+    },
+    "frontend.md": {
+      "own": true
+    },
+    "security.md": {
+      "own": true
+    },
+    "testing.md": {
+      "own": true
+    }
+  }
+}

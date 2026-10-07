@@ -1,0 +1,41 @@
+{
+  "stack": "python-fastapi-react",
+  "rules": {
+    "governance.md": {
+      "source": "governance.md",
+      "vars": {
+        "NIT_EXAMPLE": "Could simplify with a comprehension here.",
+        "MANIFEST_FILES": "`pyproject.toml` and `package.json`",
+        "AUDIT_COMMANDS": "`pip-audit` and `npm audit`",
+        "VERSION_FILES": "`pyproject.toml` / `package.json`"
+      }
+    },
+    "dev-level.md": {
+      "source": "dev-level.md",
+      "vars": {
+        "DEV_LEVEL": "SENIOR",
+        "JUNIOR_PITFALLS": "blocking the event loop inside an `async def` endpoint, mutating state directly in React",
+        "FRAMEWORK_IDIOMS": "FastAPI dependencies, React hooks",
+        "IDIOMATIC_EXTRA": " Comprehensions and generators are fine.",
+        "RUNTIME_INTERNALS": "FastAPI internals, SQLAlchemy, and the Python runtime",
+        "DOC_REFERENCES": "FastAPI documentation, PEPs, or RFCs",
+        "ADVANCED_CONSTRUCTS": "generics, dependency overrides, custom hooks patterns"
+      }
+    },
+    "backend.md": {
+      "own": true
+    },
+    "database.md": {
+      "own": true
+    },
+    "frontend.md": {
+      "own": true
+    },
+    "security.md": {
+      "own": true
+    },
+    "testing.md": {
+      "own": true
+    }
+  }
+}

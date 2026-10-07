@@ -1,0 +1,35 @@
+{
+  "stack": "angular-only",
+  "rules": {
+    "governance.md": {
+      "source": "governance.md",
+      "vars": {
+        "NIT_EXAMPLE": "Could simplify with optional chaining here.",
+        "MANIFEST_FILES": "`package.json`",
+        "AUDIT_COMMANDS": "`npm audit`",
+        "VERSION_FILES": "`package.json`"
+      }
+    },
+    "dev-level.md": {
+      "source": "dev-level.md",
+      "vars": {
+        "DEV_LEVEL": "SENIOR",
+        "JUNIOR_PITFALLS": "forgetting to unsubscribe from an Observable, mutating an `@Input()` directly",
+        "FRAMEWORK_IDIOMS": "Angular decorators, RxJS operators",
+        "IDIOMATIC_EXTRA": " RxJS operator chains are fine.",
+        "RUNTIME_INTERNALS": "Angular internals, RxJS, and the browser runtime",
+        "DOC_REFERENCES": "Angular documentation or RFCs",
+        "ADVANCED_CONSTRUCTS": "generic types, custom RxJS operators, injection tokens"
+      }
+    },
+    "frontend.md": {
+      "own": true
+    },
+    "security.md": {
+      "own": true
+    },
+    "testing.md": {
+      "own": true
+    }
+  }
+}

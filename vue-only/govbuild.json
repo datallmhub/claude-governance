@@ -1,0 +1,35 @@
+{
+  "stack": "vue-only",
+  "rules": {
+    "governance.md": {
+      "source": "governance.md",
+      "vars": {
+        "NIT_EXAMPLE": "Could simplify with optional chaining here.",
+        "MANIFEST_FILES": "`package.json`",
+        "AUDIT_COMMANDS": "`npm audit`",
+        "VERSION_FILES": "`package.json`"
+      }
+    },
+    "dev-level.md": {
+      "source": "dev-level.md",
+      "vars": {
+        "DEV_LEVEL": "SENIOR",
+        "JUNIOR_PITFALLS": "mutating a prop directly, forgetting `.value` on a ref",
+        "FRAMEWORK_IDIOMS": "Vue Composition API, reactivity helpers",
+        "IDIOMATIC_EXTRA": "",
+        "RUNTIME_INTERNALS": "Vue internals, the reactivity system, and the browser runtime",
+        "DOC_REFERENCES": "Vue documentation or RFCs",
+        "ADVANCED_CONSTRUCTS": "composables, custom directives, generic components"
+      }
+    },
+    "frontend.md": {
+      "own": true
+    },
+    "security.md": {
+      "own": true
+    },
+    "testing.md": {
+      "own": true
+    }
+  }
+}

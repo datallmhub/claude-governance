@@ -1,0 +1,35 @@
+{
+  "stack": "react-only",
+  "rules": {
+    "governance.md": {
+      "source": "governance.md",
+      "vars": {
+        "NIT_EXAMPLE": "Could simplify with optional chaining here.",
+        "MANIFEST_FILES": "`package.json`",
+        "AUDIT_COMMANDS": "`npm audit`",
+        "VERSION_FILES": "`package.json`"
+      }
+    },
+    "dev-level.md": {
+      "source": "dev-level.md",
+      "vars": {
+        "DEV_LEVEL": "SENIOR",
+        "JUNIOR_PITFALLS": "mutating state directly, missing dependencies in `useEffect`",
+        "FRAMEWORK_IDIOMS": "React hooks",
+        "IDIOMATIC_EXTRA": "",
+        "RUNTIME_INTERNALS": "React internals and the browser runtime",
+        "DOC_REFERENCES": "React documentation or RFCs",
+        "ADVANCED_CONSTRUCTS": "generic types, functional composition, custom hooks patterns"
+      }
+    },
+    "frontend.md": {
+      "own": true
+    },
+    "security.md": {
+      "own": true
+    },
+    "testing.md": {
+      "own": true
+    }
+  }
+}
