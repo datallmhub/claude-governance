@@ -13,6 +13,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parent.parent
 POLICIES = ROOT / "policies"
 BLOCKING = ("critical", "high")
@@ -27,7 +29,7 @@ DEFAULT_EXCLUDES = (
 
 
 class CheckError(Exception):
-    pass
+    """The policies could not be evaluated."""
 
 
 def glob_to_regex(pattern):
@@ -51,10 +53,12 @@ def glob_to_regex(pattern):
 
 
 def matches_any(path, patterns):
+    """True when the path matches at least one glob."""
     return any(glob_to_regex(pattern).match(path) for pattern in patterns)
 
 
 def git(*args):
+    """Run a git command in the repository and return its output lines."""
     result = subprocess.run(
         ["git", *args], cwd=ROOT, capture_output=True, text=True, check=False
     )
@@ -79,13 +83,14 @@ def changed_files(base):
 
 
 def tracked_files():
+    """Every file tracked by git."""
     return sorted(git("ls-files"))
 
 
 def load_policies(domains=None):
+    """Load the policies of every domain, or of the given ones."""
     if not POLICIES.is_dir():
         raise CheckError(f"no policy directory at {POLICIES}")
-    import yaml  # imported here so `--help` works without the dependency
 
     policies = []
     for domain_dir in sorted(POLICIES.iterdir()):
@@ -100,6 +105,16 @@ def load_policies(domains=None):
     return policies
 
 
+def read_lines(file_path):
+    """The lines of a readable text file, or none when it cannot be read."""
+    if not file_path.is_file():
+        return []
+    try:
+        return file_path.read_text(encoding="utf-8").splitlines()
+    except (UnicodeDecodeError, OSError):
+        return []
+
+
 def scan(policy, detector, paths):
     """Return the findings and the waivers of one detector over the given paths."""
     include = detector.get("include") or ["**/*"]
@@ -111,13 +126,7 @@ def scan(policy, detector, paths):
     for path in paths:
         if not matches_any(path, include) or matches_any(path, exclude):
             continue
-        file_path = ROOT / path
-        if not file_path.is_file():
-            continue
-        try:
-            lines = file_path.read_text(encoding="utf-8").splitlines()
-        except (UnicodeDecodeError, OSError):
-            continue
+        lines = read_lines(ROOT / path)
         for number, line in enumerate(lines, start=1):
             if not pattern.search(line):
                 continue
@@ -141,6 +150,7 @@ def scan(policy, detector, paths):
 
 
 def evaluate(paths, domains=None):
+    """Run the detectors of every CI-enforced policy over the paths."""
     results = []
     for policy in load_policies(domains):
         if policy["domain"] == ENTERPRISE_DOMAIN and not domains:
@@ -151,7 +161,9 @@ def evaluate(paths, domains=None):
         findings, waivers = [], []
         for detector in detectors:
             if detector.get("evaluator") != "regex":
-                raise CheckError(f"{policy['id']}: unsupported evaluator {detector.get('evaluator')}")
+                raise CheckError(
+                    f"{policy['id']}: unsupported evaluator {detector.get('evaluator')}"
+                )
             detector_findings, detector_waivers = scan(policy, detector, paths)
             findings += detector_findings
             waivers += detector_waivers
@@ -168,6 +180,7 @@ def evaluate(paths, domains=None):
 
 
 def decide(results):
+    """BLOCK on a critical or high finding, WARN below, PASS on none."""
     blocking = [
         finding
         for result in results
@@ -186,6 +199,7 @@ def decide(results):
 
 
 def status_of(result):
+    """The reported status of one policy."""
     if not result["automated"]:
         return "AGENT-ONLY"
     if not result["findings"]:
@@ -194,29 +208,37 @@ def status_of(result):
 
 
 def render_text(results, decision, scanned):
+    """Render the policy report as text."""
     width = max(len(result["title"]) for result in results)
     lines = ["", "Governance Report", "-" * (width + 24), ""]
     for result in results:
         count = len(result["findings"])
         suffix = f"  {count} finding(s)" if count else ""
-        lines.append(f"{result['id']:<9}{result['title']:<{width + 2}}{status_of(result):<11}{suffix}")
+        lines.append(
+            f"{result['id']:<9}{result['title']:<{width + 2}}{status_of(result):<11}{suffix}"
+        )
 
     findings = [finding for result in results for finding in result["findings"]]
     if findings:
         lines.append("")
         for finding in findings:
             lines.append(
-                f"  {finding['file']}:{finding['line']}  [{finding['detector']}] {finding['message']}"
+                f"  {finding['file']}:{finding['line']}"
+                f"  [{finding['detector']}] {finding['message']}"
             )
     waivers = [waiver for result in results for waiver in result["waivers"]]
     for waiver in waivers:
-        lines.append(f"  waived {waiver['file']}:{waiver['line']}  [{waiver['detector']}] {waiver['waived_because']}")
+        lines.append(
+            f"  waived {waiver['file']}:{waiver['line']}"
+            f"  [{waiver['detector']}] {waiver['waived_because']}"
+        )
 
     lines += ["", f"{len(scanned)} file(s) scanned", f"Decision: {decision}", ""]
     return "\n".join(lines)
 
 
 def policy_by_id(policy_id):
+    """One enterprise policy, by id."""
     for policy in load_policies([ENTERPRISE_DOMAIN]):
         if policy["id"] == policy_id:
             return policy
@@ -273,6 +295,7 @@ def run_controls(policy, level, paths):
 
 
 def assess(paths):
+    """Classify the change and run the controls its risk level requires."""
     policy = policy_by_id(RISK_POLICY)
     level, reason, per_level = classify(paths, policy["tiers"])
     controls = run_controls(policy, level, paths)
@@ -292,6 +315,7 @@ def assess(paths):
 
 
 def render_risk(assessment, scanned):
+    """Render the risk assessment as text."""
     lines = ["", "Change Risk Assessment", "-" * 60, ""]
     lines.append(f"Risk: {assessment['risk']} — {assessment['reason']}")
     lines.append("")
@@ -306,13 +330,14 @@ def render_risk(assessment, scanned):
     for control in assessment["controls"]:
         for finding in control.get("findings") or []:
             lines.append(
-                f"    {finding['file']}:{finding['line']}  [{finding['detector']}] {finding['message']}"
+                f"    {finding['file']}:{finding['line']}"
+                f"  [{finding['detector']}] {finding['message']}"
             )
     lines += ["", f"{len(scanned)} file(s) scanned", f"Decision: {assessment['decision']}", ""]
     return "\n".join(lines)
 
 
-def gh(*args):
+def run_gh(*args):
     """Call the GitHub CLI, returning None when it is absent, unauthenticated or failing."""
     try:
         result = subprocess.run(
@@ -347,6 +372,7 @@ def gh_api(endpoint):
 
 
 def dotted(payload, path):
+    """Read a dotted field out of a JSON payload, or None."""
     for key in path.split("."):
         if not isinstance(payload, dict) or key not in payload:
             return None
@@ -355,6 +381,7 @@ def dotted(payload, path):
 
 
 def expectation_met(actual, expected):
+    """Evaluate one expectation of a baseline control."""
     if actual is None:
         return False
     if expected.startswith(">="):
@@ -370,8 +397,9 @@ def expectation_met(actual, expected):
 
 
 def check_baseline():
+    """Verify the platform controls, through the GitHub API where one exists."""
     policy = policy_by_id(BASELINE_POLICY)
-    context = gh("repo", "view", "--json", "nameWithOwner,defaultBranchRef")
+    context = run_gh("repo", "view", "--json", "nameWithOwner,defaultBranchRef")
     repo, default_branch = None, None
     if context:
         parsed = json.loads(context)
@@ -423,20 +451,26 @@ def check_baseline():
 
 
 def render_baseline(baseline):
+    """Render the platform baseline as text."""
     lines = ["", "Platform Governance Baseline", "-" * 60, ""]
     lines.append(f"Repository: {baseline['repository'] or 'unknown'}")
     lines.append("")
     width = max(len(control["title"]) for control in baseline["controls"])
     for control in baseline["controls"]:
-        lines.append(f"  {control['title']:<{width + 2}}{control['status']:<11}{control.get('detail', '')}")
+        lines.append(
+            f"  {control['title']:<{width + 2}}{control['status']:<11}{control.get('detail', '')}"
+        )
     lines += ["", f"Decision: {baseline['decision']}", ""]
     return "\n".join(lines)
 
 
 def main():
+    """Entry point: check, report, risk or baseline."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("command", choices=["check", "report", "risk", "baseline"])
-    parser.add_argument("--changed", action="store_true", help="only files changed against the base ref")
+    parser.add_argument(
+        "--changed", action="store_true", help="only files changed against the base ref"
+    )
     parser.add_argument("--base", help="base ref for --changed (default: origin/main, then main)")
     parser.add_argument("--domain", action="append", help="limit to a policy domain, repeatable")
     parser.add_argument("--format", choices=["text", "json"], default="text")
@@ -445,7 +479,10 @@ def main():
     try:
         if args.command == "baseline":
             baseline = check_baseline()
-            print(json.dumps(baseline, indent=2) if args.format == "json" else render_baseline(baseline))
+            print(
+                json.dumps(baseline, indent=2) if args.format == "json"
+                else render_baseline(baseline)
+            )
             return 1 if baseline["decision"] == "BLOCK" else 0
 
         paths = changed_files(args.base) if args.changed else tracked_files()
@@ -465,7 +502,9 @@ def main():
 
     decision = decide(results)
     if args.format == "json":
-        print(json.dumps({"decision": decision, "scanned": len(paths), "policies": results}, indent=2))
+        print(json.dumps(
+            {"decision": decision, "scanned": len(paths), "policies": results}, indent=2
+        ))
     else:
         print(render_text(results, decision, paths))
 
