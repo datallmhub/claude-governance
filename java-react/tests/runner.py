@@ -20,7 +20,11 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
-from mistralai import Mistral
+try:
+    # mistralai 2.x moved the client out of the package root.
+    from mistralai.client import Mistral
+except ImportError:  # mistralai 1.x layout
+    from mistralai import Mistral  # pylint: disable=no-name-in-module
 
 TESTS_DIR = Path(__file__).parent
 SCENARIOS_DIR = TESTS_DIR / "scenarios"
@@ -39,7 +43,9 @@ GOVEVAL_PREFIX = (
 
 
 @dataclass
-class Scenario:
+class Scenario:  # pylint: disable=too-many-instance-attributes
+    """One GovEval scenario, parsed from its markdown file."""
+
     id: str
     category: str
     title: str
@@ -52,6 +58,8 @@ class Scenario:
 
 @dataclass
 class Result:
+    """The judge's verdict on the code generated for one scenario."""
+
     scenario: Scenario
     model_used: str
     generated: str
@@ -62,6 +70,7 @@ class Result:
 
 
 def parse_scenario(path: Path) -> Scenario:
+    """Read a scenario file into its frontmatter metadata and its sections."""
     content = path.read_text()
 
     fm_match = re.match(r"^---\n(.*?)\n---\n", content, re.DOTALL)
@@ -89,6 +98,7 @@ def parse_scenario(path: Path) -> Scenario:
 
 
 def generate_code(scenario: Scenario) -> str:
+    """Run the scenario prompt through the generator and return what it produced."""
     user_content = GOVEVAL_PREFIX
     if scenario.context:
         user_content += f"{scenario.context}\n\n"
@@ -105,6 +115,7 @@ def generate_code(scenario: Scenario) -> str:
         capture_output=True,
         text=True,
         timeout=300,
+        check=False,
     )
 
     if result.returncode != 0:
@@ -115,11 +126,13 @@ def generate_code(scenario: Scenario) -> str:
 
 
 def judge_code(judge: Mistral, scenario: Scenario, generated: str, claude_md: str) -> dict:
+    """Score the generated code against the one rule the scenario puts under test."""
     prompt = f"""You are a strict governance auditor. Your task is to evaluate ONE specific rule.
 
 IMPORTANT: Evaluate ONLY the rule under test below.
 The project governance rules are provided as context only — do NOT penalize for unrelated rules.
-A scenario testing DTOs must not fail because of tenant isolation. A scenario testing layer separation must not fail because of JWT handling.
+A scenario testing DTOs must not fail because of tenant isolation.
+A scenario testing layer separation must not fail because of JWT handling.
 
 ## Project governance rules (context only)
 {claude_md}
@@ -152,7 +165,10 @@ Respond with a JSON object only — no explanation outside the JSON:
     response = judge.chat.complete(
         model=JUDGE_MODEL,
         messages=[
-            {"role": "system", "content": "You are a strict code reviewer. Output only valid JSON."},
+            {
+                "role": "system",
+                "content": "You are a strict code reviewer. Output only valid JSON.",
+            },
             {"role": "user", "content": prompt},
         ],
     )
@@ -168,7 +184,12 @@ Respond with a JSON object only — no explanation outside the JSON:
             return data
         except (json.JSONDecodeError, ValueError):
             pass
-    return {"score": 0, "passed": False, "violations": ["judge response not parseable"], "reason": text[:200]}
+    return {
+        "score": 0,
+        "passed": False,
+        "violations": ["judge response not parseable"],
+        "reason": text[:200],
+    }
 
 
 def run_scenarios(
@@ -177,6 +198,7 @@ def run_scenarios(
     category_filter: str | None = None,
     scenario_filter: str | None = None,
 ) -> list[Result]:
+    """Generate and judge every scenario the filters keep."""
     paths = sorted(SCENARIOS_DIR.glob("**/*.md"))
     results = []
 
@@ -217,6 +239,7 @@ def run_scenarios(
 
 
 def write_results(results: list[Result]) -> Path:
+    """Write the run report and return its path."""
     RESULTS_DIR.mkdir(exist_ok=True)
     today = date.today().isoformat()
     out = RESULTS_DIR / f"{today}.md"
@@ -245,7 +268,8 @@ def write_results(results: list[Result]) -> Path:
 
     for category, cat_results in by_category.items():
         cat_passed = sum(1 for r in cat_results if r.passed)
-        lines.append(f"\n---\n\n## {category.replace('_', ' ').title()} — {cat_passed}/{len(cat_results)}\n")
+        heading = category.replace("_", " ").title()
+        lines.append(f"\n---\n\n## {heading} — {cat_passed}/{len(cat_results)}\n")
 
         for r in cat_results:
             status = "✅ PASS" if r.passed else "❌ FAIL"
@@ -265,9 +289,13 @@ def write_results(results: list[Result]) -> Path:
     return out
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Parse the arguments, run the selected scenarios and report."""
     parser = argparse.ArgumentParser(description="GovEval — Claude governance evaluation runner")
-    parser.add_argument("--category", choices=["architecture", "security", "cost_control", "developer_level"])
+    parser.add_argument(
+        "--category",
+        choices=["architecture", "security", "cost_control", "developer_level"],
+    )
     parser.add_argument("--scenario", help="Run a single scenario by ID (e.g. SEC-01)")
     args = parser.parse_args()
 
@@ -291,3 +319,7 @@ if __name__ == "__main__":
         print(f"\n{passed}/{len(results)} passed — results: {out}")
     else:
         print("No scenarios matched.")
+
+
+if __name__ == "__main__":
+    main()
