@@ -1,5 +1,6 @@
 {
   "stack": "vue-only",
+  "serves_http": false,
   "rules": {
     "governance.md": {
       "source": "governance.md",
@@ -22,10 +23,15 @@
         "ADVANCED_CONSTRUCTS": "composables, custom directives, generic components"
       }
     },
-    "frontend.md": {
-      "own": true
-    },
     "security.md": {
+      "from_policies": "security",
+      "title": "Security Rules — Vue 3 / TypeScript",
+      "paths": [
+        "src/**/*.vue",
+        "src/**/*.ts"
+      ]
+    },
+    "frontend.md": {
       "own": true
     },
     "testing.md": {

@@ -1,5 +1,6 @@
 {
   "stack": "nestjs-react",
+  "serves_http": true,
   "rules": {
     "governance.md": {
       "source": "governance.md",
@@ -22,6 +23,16 @@
         "ADVANCED_CONSTRUCTS": "custom decorators, dynamic modules, query key factories"
       }
     },
+    "security.md": {
+      "from_policies": "security",
+      "title": "Security Rules — NestJS + React",
+      "paths": [
+        "backend/src/**/*.ts",
+        "frontend/src/**/*.ts",
+        "frontend/src/**/*.tsx",
+        "infra/**/*"
+      ]
+    },
     "backend.md": {
       "own": true
     },
@@ -29,9 +40,6 @@
       "own": true
     },
     "frontend.md": {
-      "own": true
-    },
-    "security.md": {
       "own": true
     },
     "testing.md": {

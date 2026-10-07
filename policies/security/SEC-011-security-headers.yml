@@ -1,0 +1,56 @@
+id: SEC-011
+title: Security headers
+heading: Security Headers
+severity: high
+
+enforcement:
+  agent: true
+  ci: false
+  pre_commit: false
+
+not_applicable:
+  angular-only: Headers are set by the web server or CDN serving the build, not by the application.
+  react-only: Headers are set by the web server or CDN serving the build, not by the application.
+  vue-only: Headers are set by the web server or CDN serving the build, not by the application.
+
+requirements:
+  - 'Always send `X-Frame-Options: DENY` and `X-Content-Type-Options: nosniff`.'
+  - Always send a `Content-Security-Policy` that defaults to `'self'`.
+  - 'Always send `Referrer-Policy: strict-origin-when-cross-origin` or stricter.'
+  - Always set the headers centrally, never per endpoint.
+
+stacks:
+  java-react:
+    requirements:
+      - Always configure the headers through Spring Security's `headers()` DSL.
+    example: |
+      ```java
+      http.headers(headers -> headers
+          .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
+          .frameOptions(frame -> frame.deny())
+          .xssProtection(xss -> xss.enable())
+          .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN))
+      );
+      ```
+  nestjs-react:
+    requirements:
+      - Always apply `helmet()` in `main.ts` before registering routes.
+    example: |
+      ```typescript
+      app.use(helmet());
+      ```
+  nextjs:
+    requirements:
+      - Always declare the headers in `next.config.ts` so every route inherits them.
+    example: |
+      ```typescript
+      const securityHeaders = [
+        { key: 'X-Frame-Options', value: 'DENY' },
+        { key: 'X-Content-Type-Options', value: 'nosniff' },
+        { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
+      ];
+      ```
+  python-fastapi-react:
+    requirements:
+      - Always add the headers in a single middleware rather than on individual responses.

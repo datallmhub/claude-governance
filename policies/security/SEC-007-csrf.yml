@@ -1,0 +1,34 @@
+id: SEC-007
+title: CSRF protection
+heading: CSRF
+severity: high
+
+enforcement:
+  agent: true
+  ci: false
+  pre_commit: false
+
+not_applicable:
+  angular-only: CSRF is enforced by the API that owns the session cookie.
+  react-only: CSRF is enforced by the API that owns the session cookie.
+  vue-only: CSRF is enforced by the API that owns the session cookie.
+
+requirements:
+  - Always enable CSRF protection on any endpoint a browser can reach with a cookie-based session.
+  - A stateless API may skip CSRF only when no cookie takes part in authentication.
+  - Always set `SameSite=Strict` on the refresh token cookie as defence in depth.
+
+stacks:
+  java-react:
+    requirements:
+      - Always keep Spring Security's CSRF filter enabled when a session or refresh cookie is used.
+  nestjs-react:
+    requirements:
+      - Always enable a CSRF middleware when the refresh cookie is accepted on state-changing routes.
+  nextjs:
+    requirements:
+      - Always use Server Actions for mutations — Next.js protects them against cross-origin invocation.
+      - Never implement a state-changing operation in a route handler that can be triggered cross-origin.
+  python-fastapi-react:
+    requirements:
+      - Always require a double-submit CSRF token on cookie-authenticated state-changing endpoints.

@@ -1,0 +1,53 @@
+id: SEC-005
+title: Output encoding and XSS prevention
+heading: Output Encoding & XSS Prevention
+severity: high
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: false
+
+requirements:
+  - Always rely on the framework's default output escaping.
+  - Always sanitize HTML with a vetted library before injecting it, and prefer not injecting raw HTML at all.
+  
+detect:
+  - id: SEC-005.raw-html-injection
+    evaluator: regex
+    severity: high
+    message: Raw HTML injected into the DOM — sanitize it or render it as text.
+    include: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.vue"]
+    pattern: |-
+      (dangerouslySetInnerHTML|\[innerHTML\]|v-html|\.innerHTML\s*=)
+
+server_requirements:
+  - 'Always set `Content-Type: application/json` explicitly on API responses, and never return HTML from an API endpoint.'
+
+stacks:
+  java-react:
+    requirements:
+      - Always render through JSX, which escapes by default, rather than `dangerouslySetInnerHTML`.
+      - Always configure the response headers through Spring Security.
+  nestjs-react:
+    requirements:
+      - Always render through JSX, which escapes by default, rather than `dangerouslySetInnerHTML`.
+  nextjs:
+    requirements:
+      - Always render user content through JSX. A Server Component that returns raw HTML is still an XSS sink.
+  python-fastapi-react:
+    requirements:
+      - Always return JSON from the API and let React escape it on render.
+      - Always escape values explicitly when rendering a Jinja template.
+  angular-only:
+    requirements:
+      - Always rely on Angular's built-in sanitization. Never call `bypassSecurityTrustHtml` on user-controlled content.
+      - Never bind user content to `[innerHTML]` without sanitizing it first.
+  react-only:
+    requirements:
+      - Always render user content through JSX, which escapes by default.
+      - Never pass user content to `dangerouslySetInnerHTML` without sanitizing it first.
+  vue-only:
+    requirements:
+      - Always render user content with text interpolation, which escapes by default.
+      - Never bind user content to `v-html` without sanitizing it first.

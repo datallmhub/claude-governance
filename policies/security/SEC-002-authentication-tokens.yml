@@ -1,0 +1,99 @@
+id: SEC-002
+title: Authentication and token handling
+heading: Authentication & Tokens
+severity: critical
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: false
+
+requirements:
+  - Always store the access token in memory only. Never in `localStorage` or `sessionStorage`.
+  - Always store the refresh token in an `HttpOnly; Secure; SameSite=Strict` cookie.
+  - 'Always set short lifetimes: 15 minutes for the access token, 7 days for the refresh token.'
+    
+detect:
+  - id: SEC-002.token-in-web-storage
+    evaluator: regex
+    message: Token persisted in web storage — keep the access token in memory.
+    include: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.vue"]
+    pattern: |-
+      (?i)(localStorage|sessionStorage)\.setItem\(\s*["'][^"']*(token|jwt|auth)[^"']*["']
+
+server_requirements:
+  - Always validate the token signature and the `exp`, `iss` and `aud` claims on every request.
+  - Never accept a token whose signing algorithm is read from the token itself.
+
+stacks:
+  java-react:
+    requirements:
+      - Always validate claims in the JWT filter before the request reaches a controller.
+    example: |
+      ```java
+      // JWT filter: validate all claims
+      Claims claims = Jwts.parserBuilder()
+          .setSigningKey(signingKey)
+          .requireIssuer("taskflow-api")
+          .requireAudience("taskflow-web")
+          .build()
+          .parseClaimsJws(token)
+          .getBody();
+      ```
+  nestjs-react:
+    requirements:
+      - Always validate the claims in `JwtStrategy.validate()` rather than in a controller or a service.
+    example: |
+      ```typescript
+      @Injectable()
+      export class JwtStrategy extends PassportStrategy(Strategy) {
+        constructor(config: ConfigService) {
+          super({
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            secretOrKey: config.getOrThrow('JWT_SECRET'),
+            issuer: '[your-app]-api',
+            audience: '[your-app]-web',
+          });
+        }
+      }
+      ```
+  nextjs:
+    requirements:
+      - Always read the session with `auth()` in Server Components and Server Actions.
+      - Always call `auth()` at the top of a Server Action and throw when the session is missing.
+      - 'Always set `trustHost: true` only behind a trusted reverse proxy.'
+    example: |
+      ```typescript
+      export async function deleteProduct(uid: string) {
+        const session = await auth();
+        if (!session?.user) throw new Error('Unauthorized');
+        // ...
+      }
+      ```
+  python-fastapi-react:
+    requirements:
+      - Always extract the token with `OAuth2PasswordBearer` and decode it in a dependency, not in the endpoint body.
+      - Always use an HMAC secret of at least 32 characters for HS256 signing.
+    example: |
+      ```python
+      def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
+          try:
+              payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
+              user_id: str = payload.get("sub")
+              if not user_id:
+                  raise credentials_exception
+          except JWTError:
+              raise credentials_exception
+      ```
+  angular-only:
+    requirements:
+      - Always hold the access token in a service field or a signal, and attach it through an `HttpInterceptor`.
+      - Always let the backend set and rotate the refresh cookie. The application never reads it.
+  react-only:
+    requirements:
+      - Always hold the access token in a module-scoped variable or a store, and attach it in the API client.
+      - Always let the backend set and rotate the refresh cookie. The application never reads it.
+  vue-only:
+    requirements:
+      - Always hold the access token in a Pinia store kept in memory, and attach it in the API client.
+      - Always let the backend set and rotate the refresh cookie. The application never reads it.

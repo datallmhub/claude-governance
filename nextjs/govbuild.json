@@ -1,5 +1,6 @@
 {
   "stack": "nextjs",
+  "serves_http": true,
   "rules": {
     "governance.md": {
       "source": "governance.md",
@@ -22,6 +23,16 @@
         "ADVANCED_CONSTRUCTS": "server actions, streaming, custom hooks patterns"
       }
     },
+    "security.md": {
+      "from_policies": "security",
+      "title": "Security Rules — Next.js",
+      "paths": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/app/api/**/*",
+        "src/actions/**/*"
+      ]
+    },
     "backend.md": {
       "own": true
     },
@@ -29,9 +40,6 @@
       "own": true
     },
     "frontend.md": {
-      "own": true
-    },
-    "security.md": {
       "own": true
     },
     "testing.md": {

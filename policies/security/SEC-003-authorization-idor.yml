@@ -1,0 +1,68 @@
+id: SEC-003
+title: Authorization and IDOR prevention
+heading: Authorization & IDOR Prevention
+severity: critical
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: false
+
+requirements:
+  - Always expose a `public_id` UUID in URLs and responses. Never expose the internal sequential identifier.
+  - 'Always apply least privilege: grant only the permissions the operation requires.'
+
+server_requirements:
+  - Always verify that the resource belongs to the authenticated user's organization before returning or mutating it.
+  - Always read the tenant or organization identifier from the authenticated principal, never from the request payload.
+  - Always deny by default — a public endpoint is the exception and must be declared explicitly.
+
+stacks:
+  java-react:
+    requirements:
+      - Always enforce access at the method level with `@PreAuthorize`. Never rely on URL-only security.
+    example: |
+      ```java
+      // Always verify org ownership, not just authentication
+      @PreAuthorize("hasRole('USER')")
+      public TaskResponse getTask(UUID taskUid, Long orgId) {
+          return taskRepository.findByPublicIdAndOrgId(taskUid, orgId)
+              .map(mapper::toResponse)
+              .orElseThrow(() -> new TaskNotFoundException(taskUid));
+      }
+      ```
+  nestjs-react:
+    requirements:
+      - Always protect routes with `@UseGuards(JwtAuthGuard, RolesGuard)`. Never rely on URL patterns alone.
+      - Always mark a public endpoint with an explicit `@Public()` decorator.
+    example: |
+      ```typescript
+      @Get(':taskUid')
+      @UseGuards(JwtAuthGuard)
+      async getTask(
+        @Param('taskUid', ParseUUIDPipe) taskUid: string,
+        @CurrentUser() user: AuthUser,
+      ) {
+        return this.tasksService.findByPublicId(taskUid, user.organizationId);
+      }
+      ```
+  nextjs:
+    requirements:
+      - Always verify ownership inside the Server Action or route handler, after `auth()` and before any database call.
+      - Never expose Prisma's internal `id` in a URL, a response or a form field.
+  python-fastapi-react:
+    requirements:
+      - Always resolve the current user through a dependency and filter every query by its organization.
+      - Never expose the internal integer `id` in a response or a path.
+  angular-only:
+    requirements:
+      - Route guards are user experience, not authorization — always assume the backend re-checks every call.
+      - Never hide a capability in the UI as the only protection. The endpoint must reject the call too.
+  react-only:
+    requirements:
+      - Client-side route protection is user experience, not authorization — always assume the backend re-checks every call.
+      - Never hide a capability in the UI as the only protection. The endpoint must reject the call too.
+  vue-only:
+    requirements:
+      - Navigation guards are user experience, not authorization — always assume the backend re-checks every call.
+      - Never hide a capability in the UI as the only protection. The endpoint must reject the call too.

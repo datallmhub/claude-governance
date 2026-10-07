@@ -1,0 +1,71 @@
+id: SEC-006
+title: CORS configuration
+heading: CORS
+severity: high
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: true
+
+not_applicable:
+  angular-only: No server to configure — the API that serves this application owns its CORS policy.
+  react-only: No server to configure — the API that serves this application owns its CORS policy.
+  vue-only: No server to configure — the API that serves this application owns its CORS policy.
+
+requirements:
+  - Always whitelist explicit origins. Never use a wildcard origin in production.
+  - Always restrict the allowed methods to those the API actually serves.
+  - Always enable credentialed requests only when cookies are required, and only together with explicit origins.
+
+detect:
+  - id: SEC-006.wildcard-origin
+    evaluator: regex
+    message: Wildcard CORS origin — whitelist the exact origins instead.
+    include: ["**/*.java", "**/*.ts", "**/*.tsx", "**/*.py"]
+    pattern: |-
+      (?i)(allowedorigins?|allow_origins|origin)\s*[:(=]\s*(\[\s*)?["']\*["']
+
+stacks:
+  java-react:
+    requirements:
+      - Always declare the policy in a `CorsConfigurationSource` bean rather than per-controller annotations.
+    example: |
+      ```java
+      @Bean
+      CorsConfigurationSource corsConfigurationSource() {
+          CorsConfiguration config = new CorsConfiguration();
+          config.setAllowedOrigins(List.of("https://taskflow.app"));
+          config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+          config.setAllowCredentials(true);
+          return new UrlBasedCorsConfigurationSource();
+      }
+      ```
+  nestjs-react:
+    requirements:
+      - Always configure `app.enableCors()` in `main.ts` with the origin read from `ConfigService`.
+    example: |
+      ```typescript
+      app.enableCors({
+        origin: config.getOrThrow<string>('CORS_ORIGIN'),
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+      });
+      ```
+  nextjs:
+    requirements:
+      - Prefer Server Actions over cross-origin API routes — a same-origin mutation needs no CORS policy at all.
+      - Always set an explicit origin allowlist when a route handler must be called cross-origin.
+  python-fastapi-react:
+    requirements:
+      - Always pass explicit origins to `CORSMiddleware`.
+    example: |
+      ```python
+      app.add_middleware(
+          CORSMiddleware,
+          allow_origins=["https://yourapp.com"],
+          allow_credentials=True,
+          allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+          allow_headers=["Authorization", "Content-Type"],
+      )
+      ```

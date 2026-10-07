@@ -1,0 +1,38 @@
+id: SEC-009
+title: Dependency security
+heading: Dependency Security
+severity: medium
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: false
+
+requirements:
+  - Always pin dependency versions. Avoid open ranges in production builds.
+  - Always commit the lockfile so the audited tree is the deployed tree.
+  - Always review the changelog, the licence and the maintenance status before adding a dependency.
+  - Always update dependencies in a dedicated `chore(deps):` change, never mixed with feature work.
+
+stacks:
+  java-react:
+    requirements:
+      - Always run `mvn dependency-check:check` and `npm audit` before a release.
+  nestjs-react:
+    requirements:
+      - Always run `npm audit` before a release.
+  nextjs:
+    requirements:
+      - Always run `npm audit` before merging to `main`.
+  python-fastapi-react:
+    requirements:
+      - Always run `pip-audit` and `npm audit` before a release.
+  angular-only:
+    requirements:
+      - Always run `npm audit` before a release.
+  react-only:
+    requirements:
+      - Always run `npm audit` before a release.
+  vue-only:
+    requirements:
+      - Always run `npm audit` before a release.

@@ -1,0 +1,70 @@
+id: SEC-008
+title: Logging and error exposure
+heading: Logging & Error Exposure
+severity: high
+
+enforcement:
+  agent: true
+  ci: false
+  pre_commit: false
+
+requirements:
+  - 'Always log security events: failed logins, rejected tokens, authorization failures.'
+  - 'Always exclude PII from logs: emails, names, phone numbers, addresses, tokens, passwords.'
+    
+server_requirements:
+  - Always return a generic message to the client and keep the diagnostic detail in the server log.
+  - Never expose a stack trace, a query or an internal identifier in an API response.
+
+stacks:
+  java-react:
+    requirements:
+      - Always map exceptions in a `@RestControllerAdvice` so no handler leaks an internal message.
+    example: |
+      ```java
+      // Correct: generic message to client, details in server log
+      log.warn("Authentication failed for user: {} — {}", maskedEmail, reason);
+      throw new BadCredentialsException("Invalid credentials");
+
+      // Forbidden: exposing internals
+      throw new BadCredentialsException("User john@example.com not found in database");
+      ```
+  nestjs-react:
+    requirements:
+      - Always log through the NestJS `Logger` and map errors in an exception filter.
+    example: |
+      ```typescript
+      // Correct
+      this.logger.warn(`Authentication failed — reason: ${reason}`);
+      throw new UnauthorizedException('Invalid credentials');
+
+      // Forbidden
+      throw new UnauthorizedException('User john@example.com not found');
+      ```
+  nextjs:
+    requirements:
+      - Always log on the server only. A `console.log` in a Client Component is visible to the user.
+  python-fastapi-react:
+    requirements:
+      - Always pass context through `extra=` instead of interpolating values into the message.
+    example: |
+      ```python
+      # Correct
+      logger.warning("Authentication failed", extra={"reason": "invalid_token"})
+      raise HTTPException(status_code=401, detail="Invalid credentials")
+
+      # Forbidden
+      raise HTTPException(status_code=401, detail=f"User {email} not found")
+      ```
+  angular-only:
+    requirements:
+      - Never log a token, a request body or a user profile to the browser console.
+      - Always strip debug logging from production builds.
+  react-only:
+    requirements:
+      - Never log a token, a request body or a user profile to the browser console.
+      - Always strip debug logging from production builds.
+  vue-only:
+    requirements:
+      - Never log a token, a request body or a user profile to the browser console.
+      - Always strip debug logging from production builds.

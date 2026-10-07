@@ -1,5 +1,6 @@
 {
   "stack": "python-fastapi-react",
+  "serves_http": true,
   "rules": {
     "governance.md": {
       "source": "governance.md",
@@ -22,6 +23,15 @@
         "ADVANCED_CONSTRUCTS": "generics, dependency overrides, custom hooks patterns"
       }
     },
+    "security.md": {
+      "from_policies": "security",
+      "title": "Security Rules — FastAPI + React",
+      "paths": [
+        "backend/**/*.py",
+        "frontend/src/**/*.ts",
+        "frontend/src/**/*.tsx"
+      ]
+    },
     "backend.md": {
       "own": true
     },
@@ -29,9 +39,6 @@
       "own": true
     },
     "frontend.md": {
-      "own": true
-    },
-    "security.md": {
       "own": true
     },
     "testing.md": {

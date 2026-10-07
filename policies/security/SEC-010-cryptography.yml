@@ -1,0 +1,57 @@
+id: SEC-010
+title: Cryptography
+heading: Cryptography
+severity: critical
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: false
+
+requirements:
+  - Always use a cryptographically secure random source for tokens, nonces and identifiers. Never a general-purpose random function.
+  - Never design a cryptographic scheme. Use the platform primitives.
+
+detect:
+  - id: SEC-010.insecure-random
+    evaluator: regex
+    message: Insecure random source used where a cryptographic one is required.
+    include: ["**/*.java", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.vue", "**/*.py"]
+    pattern: |-
+      (Math\.random\s*\(|new Random\s*\(|\brandom\.(random|randint|choice)\s*\()
+  - id: SEC-010.broken-hash
+    evaluator: regex
+    message: Broken or unsalted hash for a credential — use bcrypt, scrypt or Argon2.
+    include: ["**/*.java", "**/*.ts", "**/*.tsx", "**/*.py"]
+    pattern: |-
+      (?i)(md5|sha-?1)\b|hashlib\.(md5|sha1|sha256)\(
+
+stacks:
+  java-react:
+    requirements:
+      - Always hash passwords with BCrypt at strength 12 or above. Never MD5, SHA-1 or a plain SHA-256.
+      - Always generate tokens with `java.security.SecureRandom`.
+  nestjs-react:
+    requirements:
+      - Always hash passwords with `bcrypt` at cost factor 12 or above.
+      - Always generate tokens with `crypto.randomBytes()`.
+  nextjs:
+    requirements:
+      - Always hash passwords with `bcrypt` at cost factor 12 or above, in a server-only module.
+      - Always generate tokens with `crypto.randomUUID()` or `crypto.randomBytes()` on the server.
+  python-fastapi-react:
+    requirements:
+      - Always hash passwords with `bcrypt` through `passlib[bcrypt]`. Never `hashlib`.
+      - Always generate tokens with `secrets.token_urlsafe()`.
+  angular-only:
+    requirements:
+      - Never hash, encrypt or sign anything in the browser as a security control — the key ships with the bundle.
+      - Always use `crypto.getRandomValues()` when a non-guessable client-side value is genuinely needed.
+  react-only:
+    requirements:
+      - Never hash, encrypt or sign anything in the browser as a security control — the key ships with the bundle.
+      - Always use `crypto.getRandomValues()` when a non-guessable client-side value is genuinely needed.
+  vue-only:
+    requirements:
+      - Never hash, encrypt or sign anything in the browser as a security control — the key ships with the bundle.
+      - Always use `crypto.getRandomValues()` when a non-guessable client-side value is genuinely needed.

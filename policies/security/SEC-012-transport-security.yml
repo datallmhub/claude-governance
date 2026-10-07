@@ -1,0 +1,34 @@
+id: SEC-012
+title: HTTPS and transport security
+heading: HTTPS & Transport Security
+severity: high
+
+enforcement:
+  agent: true
+  ci: false
+  pre_commit: false
+
+not_applicable:
+  angular-only: Transport is terminated by the web server or CDN serving the build.
+  react-only: Transport is terminated by the web server or CDN serving the build.
+  vue-only: Transport is terminated by the web server or CDN serving the build.
+
+requirements:
+  - Always serve production traffic over HTTPS only, and redirect plain HTTP.
+  - 'Always send `Strict-Transport-Security: max-age=31536000; includeSubDomains` in production.'
+  - Always require TLS 1.2 as a minimum and disable TLS 1.0 and 1.1.
+  - Always mark every cookie `Secure` in production.
+
+stacks:
+  java-react:
+    requirements:
+      - Always enforce the channel with `requiresSecure()` rather than relying on the proxy alone.
+  nestjs-react:
+    requirements:
+      - Always enable HSTS through `helmet()` and trust the proxy headers explicitly.
+  nextjs:
+    requirements:
+      - Always declare `Strict-Transport-Security` in `next.config.ts` headers.
+  python-fastapi-react:
+    requirements:
+      - Always add `HTTPSRedirectMiddleware` and `TrustedHostMiddleware` in production.

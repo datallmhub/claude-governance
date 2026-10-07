@@ -1,5 +1,6 @@
 {
   "stack": "react-only",
+  "serves_http": false,
   "rules": {
     "governance.md": {
       "source": "governance.md",
@@ -22,10 +23,15 @@
         "ADVANCED_CONSTRUCTS": "generic types, functional composition, custom hooks patterns"
       }
     },
-    "frontend.md": {
-      "own": true
-    },
     "security.md": {
+      "from_policies": "security",
+      "title": "Security Rules — React / TypeScript",
+      "paths": [
+        "src/**/*.tsx",
+        "src/**/*.ts"
+      ]
+    },
+    "frontend.md": {
       "own": true
     },
     "testing.md": {

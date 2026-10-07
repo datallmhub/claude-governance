@@ -1,0 +1,88 @@
+id: SEC-004
+title: Input validation and injection prevention
+heading: Input Validation & Injection Prevention
+severity: critical
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: true
+
+requirements:
+  - Always validate user input at the system boundary, before it reaches any business logic.
+  - Never pass user input to a shell command, a deserializer or a dynamic evaluation function.
+
+detect:
+  - id: SEC-004.sql-string-interpolation
+    evaluator: regex
+    message: User input interpolated into SQL — use a parameterized query.
+    include: ["**/*.java", "**/*.ts", "**/*.tsx", "**/*.py"]
+    pattern: |-
+      (?i)(select|insert into|update|delete from)\b[^;"'`]*("\s*\+|\$\{|%\s*\(|\bformat\()
+  - id: SEC-004.dynamic-eval
+    evaluator: regex
+    severity: high
+    message: Dynamic evaluation of a string — remove it or validate against an allowlist.
+    include: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.vue", "**/*.py"]
+    pattern: |-
+      (?<![\w.])(eval|new Function)\s*\(
+
+server_requirements:
+  - Always use parameterized queries. Never concatenate or interpolate user input into a query string.
+  - Always reject unknown fields instead of silently ignoring them.
+
+stacks:
+  java-react:
+    requirements:
+      - Always validate request bodies with Bean Validation (`@Valid`) on the controller parameter.
+      - Always use JPQL named parameters or `@Query` with `:param`.
+    example: |
+      ```java
+      // Correct: parameterized JPQL
+      @Query("SELECT t FROM TaskEntity t WHERE t.title LIKE %:search% AND t.orgId = :orgId")
+      List<TaskEntity> searchByTitle(@Param("search") String search, @Param("orgId") Long orgId);
+
+      // Forbidden: string concatenation
+      // "SELECT * FROM tasks WHERE title LIKE '%" + userInput + "%'"
+      ```
+  nestjs-react:
+    requirements:
+      - 'Always validate request bodies with a global `ValidationPipe` and `class-validator` decorators, with `whitelist: true`.'
+      - Always use TypeORM QueryBuilder parameters or Prisma's typed client.
+    example: |
+      ```typescript
+      // Correct: parameterized QueryBuilder
+      this.taskRepo.createQueryBuilder('t')
+        .where('t.title ILIKE :search', { search: `%${search}%` })
+        .andWhere('t.organizationId = :orgId', { orgId })
+        .getMany();
+
+      // Forbidden: template literal
+      // `SELECT * FROM tasks WHERE title LIKE '%${userInput}%'`
+      ```
+  nextjs:
+    requirements:
+      - Always validate Server Action and route handler input with Zod before any database call.
+      - Always return a structured error from a Server Action. Never surface a raw Prisma error to the client.
+    example: |
+      ```typescript
+      const schema = z.object({ title: z.string().min(1), price: z.number().positive() });
+      const parsed = schema.safeParse(input);
+      if (!parsed.success) return { error: parsed.error.flatten() };
+      ```
+  python-fastapi-react:
+    requirements:
+      - Always declare a Pydantic schema for every request body and add field constraints such as `Field(min_length=1, max_length=255)`.
+      - Always use SQLAlchemy bound parameters. Never f-string a value into SQL text.
+  angular-only:
+    requirements:
+      - Always validate form input with typed reactive form validators before calling the API.
+      - Always treat client-side validation as a user experience feature — the backend validates again.
+  react-only:
+    requirements:
+      - Always validate form input with a Zod schema wired into `react-hook-form` before calling the API.
+      - Always treat client-side validation as a user experience feature — the backend validates again.
+  vue-only:
+    requirements:
+      - Always validate form input with a schema validator before calling the API.
+      - Always treat client-side validation as a user experience feature — the backend validates again.

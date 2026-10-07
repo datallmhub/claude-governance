@@ -1,5 +1,6 @@
 {
   "stack": "angular-only",
+  "serves_http": false,
   "rules": {
     "governance.md": {
       "source": "governance.md",
@@ -22,10 +23,15 @@
         "ADVANCED_CONSTRUCTS": "generic types, custom RxJS operators, injection tokens"
       }
     },
-    "frontend.md": {
-      "own": true
-    },
     "security.md": {
+      "from_policies": "security",
+      "title": "Security Rules — Angular / TypeScript",
+      "paths": [
+        "src/**/*.ts",
+        "src/**/*.html"
+      ]
+    },
+    "frontend.md": {
       "own": true
     },
     "testing.md": {
