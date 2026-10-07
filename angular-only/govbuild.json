@@ -37,5 +37,18 @@
     "testing.md": {
       "own": true
     }
+  },
+  "adapters": {
+    "copilot": [
+      {
+        "from_policies": "security",
+        "title": "Security Rules — Angular / TypeScript",
+        "paths": [
+          "src/**/*.ts",
+          "src/**/*.html"
+        ],
+        "out": ".github/instructions/security.instructions.md"
+      }
+    ]
   }
 }

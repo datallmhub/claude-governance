@@ -37,5 +37,18 @@
     "testing.md": {
       "own": true
     }
+  },
+  "adapters": {
+    "copilot": [
+      {
+        "from_policies": "security",
+        "title": "Security Rules — React / TypeScript",
+        "paths": [
+          "src/**/*.tsx",
+          "src/**/*.ts"
+        ],
+        "out": ".github/instructions/security.instructions.md"
+      }
+    ]
   }
 }

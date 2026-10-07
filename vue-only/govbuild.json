@@ -37,5 +37,18 @@
     "testing.md": {
       "own": true
     }
+  },
+  "adapters": {
+    "copilot": [
+      {
+        "from_policies": "security",
+        "title": "Security Rules — Vue 3 / TypeScript",
+        "paths": [
+          "src/**/*.vue",
+          "src/**/*.ts"
+        ],
+        "out": ".github/instructions/security.instructions.md"
+      }
+    ]
   }
 }

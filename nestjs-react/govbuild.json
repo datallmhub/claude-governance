@@ -45,5 +45,20 @@
     "testing.md": {
       "own": true
     }
+  },
+  "adapters": {
+    "copilot": [
+      {
+        "from_policies": "security",
+        "title": "Security Rules — NestJS + React",
+        "paths": [
+          "backend/src/**/*.ts",
+          "frontend/src/**/*.ts",
+          "frontend/src/**/*.tsx",
+          "infra/**/*"
+        ],
+        "out": ".github/instructions/security.instructions.md"
+      }
+    ]
   }
 }

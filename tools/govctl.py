@@ -104,19 +104,9 @@ def load_policies(domain):
     return policies
 
 
-def render_from_policies(rule_name, spec, stack_dir, serves_http=False):
-    """Render a stack rule file from the policies of a domain, keeping only bound policies."""
-    domain = spec["from_policies"]
-    stack = stack_dir.name
-    for key in ("title", "paths"):
-        if key not in spec:
-            raise BuildError(f"{stack}/{rule_name}: '{key}' is required with 'from_policies'")
-
-    frontmatter = "---\npaths:\n" + "".join(
-        f"  - {json.dumps(pattern)}\n" for pattern in spec["paths"]
-    ) + "---\n"
-
-    chunks = [f"# {spec['title']}\n"]
+def policy_body(domain, stack, title, serves_http, origin):
+    """The shared body of an agent instruction file: one section per bound policy."""
+    chunks = [f"# {title}\n"]
     bound = 0
     for policy in load_policies(domain):
         binding = (policy.get("stacks") or {}).get(stack)
@@ -138,10 +128,33 @@ def render_from_policies(rule_name, spec, stack_dir, serves_http=False):
         chunks.append("".join(lines))
 
     if not bound:
-        raise BuildError(f"{stack}/{rule_name}: no policy of domain '{domain}' binds this stack")
+        raise BuildError(f"{origin}: no policy of domain '{domain}' binds this stack")
+    return "\n".join(chunks)
 
-    marker = POLICY_MARKER.format(domain=domain)
-    return frontmatter + marker + "\n\n" + "\n".join(chunks)
+
+def render_from_policies(rule_name, spec, stack_dir, serves_http=False):
+    """Render the Claude Code rule file of a domain for one stack."""
+    domain = spec["from_policies"]
+    stack = stack_dir.name
+    for key in ("title", "paths"):
+        if key not in spec:
+            raise BuildError(f"{stack}/{rule_name}: '{key}' is required with 'from_policies'")
+
+    frontmatter = "---\npaths:\n" + "".join(
+        f"  - {json.dumps(pattern)}\n" for pattern in spec["paths"]
+    ) + "---\n"
+    body = policy_body(domain, stack, spec["title"], serves_http, f"{stack}/{rule_name}")
+    return frontmatter + POLICY_MARKER.format(domain=domain) + "\n\n" + body
+
+
+def render_copilot_instructions(spec, stack_dir, serves_http=False):
+    """Render the GitHub Copilot path-specific instruction file of a domain for one stack."""
+    domain = spec["from_policies"]
+    stack = stack_dir.name
+    apply_to = ", ".join(spec["paths"])
+    frontmatter = f"---\napplyTo: {json.dumps(apply_to)}\n---\n"
+    body = policy_body(domain, stack, spec["title"], serves_http, f"{stack}/{spec['out']}")
+    return frontmatter + POLICY_MARKER.format(domain=domain) + "\n\n" + body
 
 
 def render(rule_name, spec, stack_dir):
@@ -196,14 +209,16 @@ def targets(manifest_path):
             content = render_from_policies(rule_name, spec, stack_dir, serves_http)
         else:
             content = render(rule_name, spec, stack_dir)
-        yield stack_dir, rule_name, content
+        yield stack_dir / ".claude" / "rules" / rule_name, content
+
+    for spec in manifest.get("adapters", {}).get("copilot", []):
+        yield stack_dir / spec["out"], render_copilot_instructions(spec, stack_dir, serves_http)
 
 
 def run(stack_filter, check_only):
     written, stale = 0, []
     for manifest_path in manifests(stack_filter):
-        for stack_dir, rule_name, content in targets(manifest_path):
-            out = stack_dir / ".claude" / "rules" / rule_name
+        for out, content in targets(manifest_path):
             current = out.read_text() if out.is_file() else ""
             if current == content:
                 continue
