@@ -187,6 +187,57 @@ instead of pushing a team to disable the check.
 
 ---
 
+## Enterprise layer: risk, controls, escalation
+
+Not every change deserves the same ceremony. `policies/enterprise/RISK-001` classifies a change by
+what it can break — not by its size — and the matrix decides which controls it must pass:
+
+| Risk | Example | Required controls |
+|---|---|---|
+| `CRITICAL` | authentication, authorization, tenant isolation, payment, or the policies themselves | automated scans + tests + human review + security review |
+| `HIGH` | server-side behaviour, data model, migrations, CI | automated scans + tests + human review |
+| `MEDIUM` | client-side application code | automated scans + tests |
+| `LOW` | documentation, non-production configuration | secret scan |
+
+```bash
+tools/governance risk --changed
+```
+
+```
+Risk: CRITICAL — Authentication, authorization, tenant isolation, payment or cryptography
+
+  No credential in the diff                                PASS
+  Layer boundaries and public identifiers respected        PASS
+  Reviewed by a human who did not author the change        REQUIRED   evidence: a pull request approval from another account
+
+Decision: ESCALATE
+```
+
+`BLOCK` means an automated control failed. `ESCALATE` means the change needs evidence this tool
+cannot produce — a passing test suite, a human approval. A path no tier matches is classified `HIGH`
+and listed, so an unknown area is never quietly downgraded.
+
+Some controls cannot be enforced by an agent or a rule file at all: an agent can be asked to open a
+pull request, but only the platform can refuse a direct push. `policies/enterprise/ENT-001` holds
+that baseline and verifies it through the GitHub API with your own credentials:
+
+```bash
+tools/governance baseline
+```
+
+```
+  Default branch requires a pull request approval                   FAIL    Settings → Rules → Rulesets → …
+  Secret scanning and push protection are enabled                   FAIL    Settings → Code security → …
+  Copilot policies are set at the enterprise or organisation level   ATTEST  Enterprise settings → Copilot → Policies
+```
+
+A control with no public API — Copilot enterprise policies, agent attribution conventions — is
+reported `ATTEST`, never `PASS`. Recording an unverifiable control as green is worse than not
+checking it. The baseline runs on a weekly schedule rather than on every pull request, because
+platform configuration is not owned by a change.
+
+---
+
 ## Developer Experience Levels
 
 One setting in `dev-level.md`: Claude adapts its verbosity automatically.

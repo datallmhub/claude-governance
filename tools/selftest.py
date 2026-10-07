@@ -32,8 +32,33 @@ def detectors():
             yield policy, detector
 
 
-def main():
+CLASSIFICATION = {
+    "backend/src/main/java/com/x/security/JwtService.java": "CRITICAL",
+    "backend/src/main/java/com/x/service/TaskService.java": "HIGH",
+    "src/components/Card.tsx": "MEDIUM",
+    "README.md": "LOW",
+    "vendor/opaque.bin": "HIGH",
+}
+
+
+def check_classification():
+    """Every risk tier must classify its own example, and the change takes the highest tier."""
+    policy = governance.policy_by_id(governance.RISK_POLICY)
     failures = []
+    for path, expected in CLASSIFICATION.items():
+        level, _, _ = governance.classify([path], policy["tiers"])
+        if level != expected:
+            failures.append(f"RISK-001: {path} classified {level}, expected {expected}")
+    level, _, _ = governance.classify(list(CLASSIFICATION), policy["tiers"])
+    if level != "CRITICAL":
+        failures.append(f"RISK-001: mixed change classified {level}, expected CRITICAL")
+    if not failures:
+        print("RISK-001: classifies every tier example and takes the highest tier of a mixed change")
+    return failures
+
+
+def main():
+    failures = check_classification()
     with tempfile.TemporaryDirectory() as workdir:
         original_root = governance.ROOT
         governance.ROOT = Path(workdir)

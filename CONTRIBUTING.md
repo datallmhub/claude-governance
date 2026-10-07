@@ -67,12 +67,20 @@ patterns. A stack opts into a policy by declaring a binding under `stacks:`; a p
 apply to a stack records the reason under `not_applicable:` rather than being silently absent.
 Requirements that only hold for a stack serving HTTP go under `server_requirements:`.
 
+The `enterprise` domain has a different shape and is not rendered into any agent file: `RISK-001`
+declares the risk tiers, the control catalogue and the matrix binding them, and `ENT-001` declares
+the platform controls read through the GitHub API. A control that no API exposes is declared
+`verify: manual` so it is reported as attested rather than passing.
+
 Every detector must have a case in `tools/selftest.py` proving it fires on a violation, stays
-silent on clean code and honours its inline waiver:
+silent on clean code and honours its inline waiver, and every risk tier must have a classification
+case:
 
 ```bash
 tools/selftest.py
 tools/governance check --changed    # evaluate a working tree against the policies
+tools/governance risk --changed     # classify the change and run the controls its tier requires
+tools/governance baseline           # verify the platform settings through the GitHub API
 tools/governance report --format json
 ```
 

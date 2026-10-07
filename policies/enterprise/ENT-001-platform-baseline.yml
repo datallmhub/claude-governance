@@ -1,0 +1,58 @@
+id: ENT-001
+title: Platform governance baseline
+heading: Platform Governance Baseline
+severity: high
+
+enforcement:
+  agent: false
+  ci: true
+  pre_commit: false
+
+requirements:
+  - 'Always enforce the controls an agent cannot bypass at the platform level: an agent can be told to open a pull request, but only the platform can refuse a direct push.'
+  - Always treat a control that cannot be read through an API as attested, never as passing. An unverifiable control recorded as green is worse than no control.
+
+# verify: gh_api — read through the GitHub API with the caller's own credentials.
+# verify: manual — no public API; the report names where to check it by hand.
+controls:
+  - id: ENT-001.branch-protection
+    title: Default branch requires a pull request approval
+    verify: gh_api
+    endpoint: repos/{repo}/branches/{default_branch}/protection
+    expect:
+      required_pull_request_reviews.required_approving_review_count: ">=1"
+    remediation: Settings → Rules → Rulesets → require a pull request with at least one approval on the default branch.
+  - id: ENT-001.required-checks
+    title: The governance workflow is a required status check
+    verify: gh_api
+    endpoint: repos/{repo}/branches/{default_branch}/protection
+    expect:
+      required_status_checks.contexts: "contains:governance"
+    remediation: Add the `governance` job to the required status checks of the default branch.
+  - id: ENT-001.secret-scanning
+    title: Secret scanning and push protection are enabled
+    verify: gh_api
+    endpoint: repos/{repo}
+    expect:
+      security_and_analysis.secret_scanning.status: "==enabled"
+      security_and_analysis.secret_scanning_push_protection.status: "==enabled"
+    remediation: Settings → Code security → enable secret scanning and push protection.
+  - id: ENT-001.actions-permissions
+    title: Workflows get read-only token permissions by default
+    verify: gh_api
+    endpoint: repos/{repo}/actions/permissions/workflow
+    expect:
+      default_workflow_permissions: "==read"
+    remediation: Settings → Actions → General → set the default GITHUB_TOKEN permissions to read-only.
+  - id: ENT-001.copilot-policy
+    title: Copilot policies are set at the enterprise or organisation level
+    verify: manual
+    evidence: Enterprise settings → Copilot → Policies. Record which models, features and repositories are allowed.
+    remediation: Decide the policy at the enterprise level; a repository cannot carry it.
+  - id: ENT-001.agent-attribution
+    title: Agent-authored changes are identifiable in the history
+    verify: manual
+    evidence: A convention or a bot account that makes agent-authored commits attributable at review time.
+    remediation: Agree on the attribution convention before scaling agent use, not after an incident.
+
+stacks: {}

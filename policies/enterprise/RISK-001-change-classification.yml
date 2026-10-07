@@ -1,0 +1,112 @@
+id: RISK-001
+title: Change risk classification
+heading: Change Risk Classification
+severity: high
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: false
+
+requirements:
+  - Always classify a change before deciding which controls it must pass. The same ceremony on every change is either too heavy or too thin.
+  - 'Always classify by what the change can break, not by its size: a three-line change to an authorization check outranks a thousand lines of styling.'
+  - Never let an agent-authored change at CRITICAL risk merge without a human approval.
+
+# First matching tier wins, so the most severe patterns are declared first.
+tiers:
+  - level: CRITICAL
+    reason: Authentication, authorization, tenant isolation, payment or cryptography
+    paths:
+      - "**/auth/**"
+      - "**/security/**"
+      - "**/guards/**"
+      - "**/*Guard*"
+      - "**/*Security*"
+      - "**/*Auth*"
+      - "**/payment*/**"
+      - "**/billing/**"
+      - "**/crypto/**"
+      - "policies/**"
+      - "core/rules/**"
+  - level: HIGH
+    reason: Server-side behaviour, data model or schema migration
+    paths:
+      - "**/migration*/**"
+      - "**/migrations/**"
+      - "**/*.sql"
+      - "backend/**"
+      - "**/api/**"
+      - "**/actions/**"
+      - "**/*.controller.ts"
+      - "**/controller/**"
+      - "**/routers/**"
+      - "**/service/**"
+      - "**/services/**"
+      - "tools/**"
+      - ".github/workflows/**"
+  - level: MEDIUM
+    reason: Client-side application code
+    paths:
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "**/*.vue"
+      - "**/*.js"
+      - "frontend/**"
+      - "src/**"
+  - level: LOW
+    reason: Documentation and non-production configuration
+    paths:
+      - "**/*.md"
+      - "docs/**"
+      - "**/*.txt"
+      - "**/*.json"
+
+# A control is either verified here or named as evidence someone else must produce.
+controls:
+  secrets_scan:
+    title: No credential in the diff
+    verify: detectors
+    detectors: [SEC-001.literal-credential]
+  injection_scan:
+    title: No injection or unsafe rendering sink
+    verify: detectors
+    detectors:
+      - SEC-004.sql-string-interpolation
+      - SEC-004.dynamic-eval
+      - SEC-005.raw-html-injection
+  exposure_scan:
+    title: No wildcard origin, weak random or token in web storage
+    verify: detectors
+    detectors:
+      - SEC-006.wildcard-origin
+      - SEC-010.insecure-random
+      - SEC-010.broken-hash
+      - SEC-002.token-in-web-storage
+  architecture_check:
+    title: Layer boundaries and public identifiers respected
+    verify: detectors
+    detectors:
+      - ARCH-001.repository-in-transport-layer
+      - ARCH-002.internal-id-path-param
+      - ARCH-004.unbounded-find-all
+  tests:
+    title: Test suite green on the change
+    verify: external
+    evidence: The CI job that runs the project's test suite.
+  human_review:
+    title: Reviewed by a human who did not author the change
+    verify: external
+    evidence: A pull request approval from another account.
+  security_review:
+    title: Reviewed by someone accountable for security
+    verify: external
+    evidence: An approval from the team or group owning security review.
+
+matrix:
+  CRITICAL: [secrets_scan, injection_scan, exposure_scan, architecture_check, tests, human_review, security_review]
+  HIGH: [secrets_scan, injection_scan, exposure_scan, architecture_check, tests, human_review]
+  MEDIUM: [secrets_scan, injection_scan, exposure_scan, tests]
+  LOW: [secrets_scan]
+
+stacks: {}

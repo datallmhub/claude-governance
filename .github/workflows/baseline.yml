@@ -1,0 +1,22 @@
+name: Platform baseline
+
+# Platform configuration drifts slowly and is not owned by a pull request, so it
+# is checked on a schedule rather than blocking every change.
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r tools/requirements.txt
+      - name: Verify the repository governance settings
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: tools/governance baseline

@@ -21,3 +21,5 @@ jobs:
         run: tools/selftest.py
       - name: Evaluate the changed files against the policies
         run: tools/governance check --changed --base ${{ github.event.pull_request.base.sha || github.event.before }}
+      - name: Classify the change and run the controls its risk level requires
+        run: tools/governance risk --changed --base ${{ github.event.pull_request.base.sha || github.event.before }}
