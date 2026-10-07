@@ -44,8 +44,10 @@ Use [`java-react/`](./java-react/) as the reference implementation.
 
 ### Generated rule files
 
-`governance.md` and `dev-level.md` are **generated** — do not edit them inside a stack folder.
-They are compiled from `core/rules/` so a governance rule is written once and applies to every stack:
+`governance.md`, `dev-level.md`, `security.md` and `architecture.md` are **generated** — do not edit
+them inside a stack folder. `governance.md` and `dev-level.md` are compiled from `core/rules/`;
+`security.md` and `architecture.md` are rendered from `policies/`, together with the matching
+GitHub Copilot instruction file under `<stack>/.github/instructions/`:
 
 ```bash
 tools/govctl build           # regenerate every stack
@@ -56,6 +58,23 @@ tools/govctl check           # fail if a generated file was hand-edited (runs in
 Stack-specific wording comes from the `vars` declared in `<stack>/govbuild.json`, and a stack
 needing a whole section rewritten declares an `overlay` file whose `##` sections replace the core's.
 Adding a rule that applies everywhere means editing `core/rules/`, then running `tools/govctl build`.
+
+### Adding or changing a policy
+
+A policy in `policies/<domain>/` carries its id, severity, enforcement surfaces, stack-agnostic
+requirements, per-stack bindings and — when a deterministic check is possible — its detection
+patterns. A stack opts into a policy by declaring a binding under `stacks:`; a policy that cannot
+apply to a stack records the reason under `not_applicable:` rather than being silently absent.
+Requirements that only hold for a stack serving HTTP go under `server_requirements:`.
+
+Every detector must have a case in `tools/selftest.py` proving it fires on a violation, stays
+silent on clean code and honours its inline waiver:
+
+```bash
+tools/selftest.py
+tools/governance check --changed    # evaluate a working tree against the policies
+tools/governance report --format json
+```
 
 ### 3. Rules quality bar
 

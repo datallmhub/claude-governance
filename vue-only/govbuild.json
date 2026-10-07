@@ -31,6 +31,14 @@
         "src/**/*.ts"
       ]
     },
+    "architecture.md": {
+      "from_policies": "architecture",
+      "title": "Architecture Rules — Vue 3 / TypeScript",
+      "paths": [
+        "src/**/*.vue",
+        "src/**/*.ts"
+      ]
+    },
     "frontend.md": {
       "own": true
     },
@@ -48,6 +56,15 @@
           "src/**/*.ts"
         ],
         "out": ".github/instructions/security.instructions.md"
+      },
+      {
+        "from_policies": "architecture",
+        "title": "Architecture Rules — Vue 3 / TypeScript",
+        "paths": [
+          "src/**/*.vue",
+          "src/**/*.ts"
+        ],
+        "out": ".github/instructions/architecture.instructions.md"
       }
     ]
   }

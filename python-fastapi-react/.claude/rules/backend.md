@@ -5,33 +5,6 @@ paths:
 
 # Backend Rules — Python / FastAPI
 
-## Public Identifiers (IDOR Security)
-
-- Always use `public_id: UUID` in API paths and response schemas. Never expose the internal integer `id`.
-- Always generate `public_id` with `default=uuid4` at the model level.
-- Always resolve `public_id → internal id` in the service layer before any DB operation.
-
-```python
-# router
-@router.get("/{product_uid}")
-async def get_product(product_uid: UUID, service: ProductService = Depends()):
-    return await service.get_by_public_id(product_uid)
-
-# service
-async def get_by_public_id(self, public_id: UUID) -> ProductResponse:
-    product = await self.repo.find_by_public_id(public_id)
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    return ProductResponse.model_validate(product)
-```
-
-## Layered Architecture
-
-- Always follow: `router → service → repository`. No layer skipping.
-- Routers validate input (via Pydantic) and call services. No business logic in routers.
-- Services hold all business logic. No direct SQLAlchemy queries in services.
-- Repositories hold all DB queries. No business logic in repositories.
-
 ## Routers
 
 - Always use `APIRouter(prefix="/api/v1/resource", tags=["resource"])`.

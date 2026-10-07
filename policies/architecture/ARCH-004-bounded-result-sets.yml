@@ -1,0 +1,46 @@
+id: ARCH-004
+title: Bounded result sets
+heading: Bounded Result Sets
+severity: high
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: false
+
+requirements:
+  - Always paginate a collection endpoint. An unbounded list is an outage waiting for the data to grow.
+  - Always cap the page size server-side, whatever the client asks for.
+  - Always apply the tenant filter in the same query as the pagination, never after it.
+
+detect:
+  - id: ARCH-004.unbounded-find-all
+    evaluator: regex
+    message: Unbounded query — pass a pagination argument.
+    include: ["**/*.java", "**/*.ts", "**/*.py"]
+    exclude: ["**/*.spec.ts", "**/*Test.java", "**/test_*.py"]
+    pattern: |-
+      \.find_?[Aa]ll\(\s*\)
+
+stacks:
+  java-react:
+    requirements:
+      - 'Always take a `Pageable` and return a `Page<T>` when the result set can exceed 100 rows.'
+  nestjs-react:
+    requirements:
+      - 'Always pass `take` and `skip` to the query builder, with a default and a maximum page size.'
+  nextjs:
+    requirements:
+      - 'Always pass `take` and `skip` to the Prisma query, with a default and a maximum page size.'
+  python-fastapi-react:
+    requirements:
+      - 'Always declare `limit` and `offset` query parameters with `Query(le=100)` bounds.'
+  angular-only:
+    requirements:
+      - Always request a page from the API and paginate or virtualise the rendered list.
+  react-only:
+    requirements:
+      - Always request a page from the API and paginate or virtualise the rendered list.
+  vue-only:
+    requirements:
+      - Always request a page from the API and paginate or virtualise the rendered list.

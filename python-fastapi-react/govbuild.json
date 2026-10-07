@@ -32,6 +32,15 @@
         "frontend/src/**/*.tsx"
       ]
     },
+    "architecture.md": {
+      "from_policies": "architecture",
+      "title": "Architecture Rules — FastAPI + React",
+      "paths": [
+        "backend/**/*.py",
+        "frontend/src/**/*.ts",
+        "frontend/src/**/*.tsx"
+      ]
+    },
     "backend.md": {
       "own": true
     },
@@ -56,6 +65,16 @@
           "frontend/src/**/*.tsx"
         ],
         "out": ".github/instructions/security.instructions.md"
+      },
+      {
+        "from_policies": "architecture",
+        "title": "Architecture Rules — FastAPI + React",
+        "paths": [
+          "backend/**/*.py",
+          "frontend/src/**/*.ts",
+          "frontend/src/**/*.tsx"
+        ],
+        "out": ".github/instructions/architecture.instructions.md"
       }
     ]
   }

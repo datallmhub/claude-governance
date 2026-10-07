@@ -18,6 +18,11 @@ VIOLATIONS = {
     "SEC-006.wildcard-origin": ("app.py", 'app.add_middleware(CORSMiddleware, allow_origins=["*"])'),
     "SEC-010.insecure-random": ("token.ts", "const nonce = Math.random().toString(36);"),
     "SEC-010.broken-hash": ("hash.py", 'digest = hashlib.md5(password.encode()).hexdigest()'),
+    "ARCH-001.repository-in-transport-layer": (
+        "TaskController.java", "private final TaskRepository taskRepository;"),
+    "ARCH-002.internal-id-path-param": (
+        "TaskApi.java", "public TaskResponse get(@PathVariable Long id) {"),
+    "ARCH-004.unbounded-find-all": ("TaskService.java", "return taskRepository.findAll();"),
 }
 
 

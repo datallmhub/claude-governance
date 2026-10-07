@@ -1,0 +1,53 @@
+id: ARCH-002
+title: Public identifiers
+heading: Public Identifiers
+severity: critical
+evals: [ARCH-02]
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: false
+
+requirements:
+  - Always expose a `public_id` UUID in URLs, payloads and logs.
+  - Never expose the internal sequential identifier outside the persistence layer.
+  - Always resolve the public identifier to the internal one as the first step of the service method.
+
+detect:
+  - id: ARCH-002.internal-id-path-param
+    evaluator: regex
+    message: Numeric path parameter — expose the public UUID instead.
+    include: ["**/*.java"]
+    pattern: |-
+      @PathVariable\s*(\([^)]*\)\s*)?(final\s+)?(Long|long|Integer|int)\b
+
+stacks:
+  java-react:
+    requirements:
+      - 'Always declare `@PathVariable UUID` in controllers and keep `Long id` inside the persistence layer.'
+    example: |
+      ```java
+      @GetMapping("/{projectUid}")
+      public ResponseEntity<ProjectResponse> getProject(@PathVariable UUID projectUid) {
+          return ResponseEntity.ok(projectService.findByPublicId(projectUid));
+      }
+      ```
+  nestjs-react:
+    requirements:
+      - 'Always parse the identifier with `@Param(''uid'', ParseUUIDPipe)` so a non-UUID never reaches the service.'
+  nextjs:
+    requirements:
+      - Always address a record by its UUID in a route segment, a Server Action argument and a form field.
+  python-fastapi-react:
+    requirements:
+      - 'Always type the path parameter as `UUID` so FastAPI rejects a numeric identifier at the boundary.'
+  angular-only:
+    requirements:
+      - Always build routes and query parameters from the public UUID. An internal identifier in a URL is a leak even when the API tolerates it.
+  react-only:
+    requirements:
+      - Always build routes and query parameters from the public UUID. An internal identifier in a URL is a leak even when the API tolerates it.
+  vue-only:
+    requirements:
+      - Always build routes and query parameters from the public UUID. An internal identifier in a URL is a leak even when the API tolerates it.

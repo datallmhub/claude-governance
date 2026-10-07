@@ -1,0 +1,37 @@
+id: ARCH-005
+title: Outbound call resilience
+heading: Outbound Call Resilience
+severity: high
+
+enforcement:
+  agent: true
+  ci: false
+  pre_commit: false
+
+requirements:
+  - Always set an explicit timeout on every network call. A default of none is a thread leak under failure.
+  - Always decide what happens on failure at the call site, rather than letting the exception cross the layer boundary untouched.
+  - Never retry a non-idempotent call without an idempotency key.
+
+stacks:
+  java-react:
+    requirements:
+      - 'Always set `.responseTimeout(Duration.ofSeconds(30))` on `WebClient`, or `connectTimeout(5000)` and `readTimeout(30000)` on `RestTemplate`.'
+  nestjs-react:
+    requirements:
+      - 'Always pass a `timeout` to `HttpModule.register()` or an `AbortSignal` to `fetch`.'
+  nextjs:
+    requirements:
+      - 'Always pass `signal: AbortSignal.timeout(ms)` to a server-side `fetch`.'
+  python-fastapi-react:
+    requirements:
+      - 'Always pass `timeout=` to `httpx` — the default client waits forever.'
+  angular-only:
+    requirements:
+      - 'Always apply the `timeout()` operator to an `HttpClient` call and handle the error branch.'
+  react-only:
+    requirements:
+      - 'Always pass `signal: AbortSignal.timeout(ms)` to `fetch`, and let the query layer own the retry policy.'
+  vue-only:
+    requirements:
+      - 'Always pass `signal: AbortSignal.timeout(ms)` to `fetch`, and let the query layer own the retry policy.'

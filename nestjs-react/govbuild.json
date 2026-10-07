@@ -33,6 +33,16 @@
         "infra/**/*"
       ]
     },
+    "architecture.md": {
+      "from_policies": "architecture",
+      "title": "Architecture Rules — NestJS + React",
+      "paths": [
+        "backend/src/**/*.ts",
+        "frontend/src/**/*.ts",
+        "frontend/src/**/*.tsx",
+        "infra/**/*"
+      ]
+    },
     "backend.md": {
       "own": true
     },
@@ -58,6 +68,17 @@
           "infra/**/*"
         ],
         "out": ".github/instructions/security.instructions.md"
+      },
+      {
+        "from_policies": "architecture",
+        "title": "Architecture Rules — NestJS + React",
+        "paths": [
+          "backend/src/**/*.ts",
+          "frontend/src/**/*.ts",
+          "frontend/src/**/*.tsx",
+          "infra/**/*"
+        ],
+        "out": ".github/instructions/architecture.instructions.md"
       }
     ]
   }

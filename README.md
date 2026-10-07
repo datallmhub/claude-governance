@@ -91,6 +91,7 @@ claude --plugin-dir /path/to/claude-governance
 <stack>/
 ├── CLAUDE.md                    # Project context: always loaded
 ├── CLAUDE.local.md.example      # Personal overrides (copy locally, never commit)
+├── govbuild.json                # Which rules are generated, and with which stack wording
 ├── .claude/
 │   ├── settings.json            # SessionStart hook: injects rules at session start
 │   ├── rules/
@@ -98,15 +99,20 @@ claude --plugin-dir /path/to/claude-governance
 │   │   ├── frontend.md          # Frontend rules: scoped to frontend files only
 │   │   ├── database.md          # DB / migration rules
 │   │   ├── testing.md           # Testing standards
-│   │   ├── security.md          # Security rules: loaded on every file
-│   │   ├── governance.md        # Git, PR, versioning, release process
-│   │   └── dev-level.md         # Behavior by experience level
+│   │   ├── security.md          # Generated from policies/security/
+│   │   ├── architecture.md      # Generated from policies/architecture/
+│   │   ├── governance.md        # Generated from core/rules/
+│   │   └── dev-level.md         # Generated from core/rules/
 │   └── architecture/
 │       ├── overview.md          # System architecture + key decisions
 │       ├── api.md               # REST API contract
 │       └── data-model.md        # Database schema
+├── .github/instructions/        # Same policies, rendered for GitHub Copilot
 └── samples/                     # Code examples applying all the rules
 ```
+
+Generated files carry a header saying so. Edit the source — `policies/` or `core/rules/` — and run
+`tools/govctl build`. `tools/govctl check` fails CI when a generated file was edited by hand.
 
 ---
 
@@ -130,6 +136,54 @@ claude --plugin-dir /path/to/claude-governance
 - **Safe tokens**: JWT in memory, refresh token in `HttpOnly; Secure` cookie
 - **Injection prevention**: parameterized queries, input validated at system boundary
 - **CORS locked down**: explicit origin whitelist, never `allowedOrigins("*")`
+
+---
+
+## Policies and enforcement
+
+A rule that only lives in Markdown is advice. In `policies/` it is a record with an id, a severity,
+the surfaces it is enforced on, the requirements, the per-stack bindings, and — when a deterministic
+check exists — the patterns that detect a violation:
+
+```yaml
+id: SEC-006
+title: CORS configuration
+severity: high
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: true
+requirements:
+  - Always whitelist explicit origins. Never use a wildcard origin in production.
+detect:
+  - id: SEC-006.wildcard-origin
+    evaluator: regex
+    include: ["**/*.java", "**/*.ts", "**/*.tsx", "**/*.py"]
+```
+
+One source, several outputs: the Claude Code rule file, the Copilot instruction file, and the check
+that runs on the code the agent produced.
+
+```bash
+tools/governance check --changed    # BLOCK on critical / high, WARN below, exit code included
+tools/governance report --format json
+```
+
+```
+Governance Report
+
+ARCH-001 Layered boundaries                         PASS
+ARCH-002 Public identifiers                         FAIL  1 finding(s)
+SEC-001  Secrets management                         PASS
+SEC-003  Authorization and IDOR prevention          AGENT-ONLY
+
+Decision: BLOCK
+```
+
+`AGENT-ONLY` means the policy is injected into the agent but has no automated check yet — the gap
+between what is written and what is verified stays visible instead of being implied. A finding is
+waived in place with `governance: allow <detector-id> — reason`, which keeps the exception auditable
+instead of pushing a team to disable the check.
 
 ---
 

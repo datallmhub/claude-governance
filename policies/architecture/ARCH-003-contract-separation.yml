@@ -1,0 +1,42 @@
+id: ARCH-003
+title: Contract separation
+heading: Contract Separation
+severity: high
+evals: [ARCH-03]
+
+enforcement:
+  agent: true
+  ci: false
+  pre_commit: false
+
+requirements:
+  - Always declare distinct types for the request and the response. A single type for both couples the two directions of the contract.
+  - Never return a persistence entity across the API boundary — map it to a response type first.
+  - Always keep the mapping in one place, so a new field is never exposed by accident.
+
+stacks:
+  java-react:
+    requirements:
+      - 'Always name them `CreateXxxRequest`, `UpdateXxxRequest`, `XxxResponse`, `XxxSummaryResponse`.'
+      - Always map the entity to its response inside the service, never in the controller.
+  nestjs-react:
+    requirements:
+      - 'Always declare a `CreateXxxDto`, an `UpdateXxxDto` and an `XxxResponseDto`.'
+      - Never return a TypeORM entity or a raw Prisma record from a controller.
+  nextjs:
+    requirements:
+      - Always return a plain serialisable object from a Server Action. A Prisma model is not a contract.
+      - Always declare the input schema and the output type next to the action.
+  python-fastapi-react:
+    requirements:
+      - 'Always declare a request schema and a `response_model` per endpoint.'
+      - Never return a SQLAlchemy model directly — FastAPI will serialise fields the contract never promised.
+  angular-only:
+    requirements:
+      - Always declare the API contract types in one module and map them to view models at the service boundary.
+  react-only:
+    requirements:
+      - Always declare the API contract types in one module and map them to view models at the API client boundary.
+  vue-only:
+    requirements:
+      - Always declare the API contract types in one module and map them to view models at the API client boundary.

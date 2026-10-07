@@ -33,6 +33,16 @@
         "src/actions/**/*"
       ]
     },
+    "architecture.md": {
+      "from_policies": "architecture",
+      "title": "Architecture Rules — Next.js",
+      "paths": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/app/api/**/*",
+        "src/actions/**/*"
+      ]
+    },
     "backend.md": {
       "own": true
     },
@@ -58,6 +68,17 @@
           "src/actions/**/*"
         ],
         "out": ".github/instructions/security.instructions.md"
+      },
+      {
+        "from_policies": "architecture",
+        "title": "Architecture Rules — Next.js",
+        "paths": [
+          "src/**/*.ts",
+          "src/**/*.tsx",
+          "src/app/api/**/*",
+          "src/actions/**/*"
+        ],
+        "out": ".github/instructions/architecture.instructions.md"
       }
     ]
   }

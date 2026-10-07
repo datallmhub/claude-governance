@@ -1,0 +1,34 @@
+id: ARCH-006
+title: Error contract
+heading: Error Contract
+severity: medium
+
+enforcement:
+  agent: true
+  ci: false
+  pre_commit: false
+
+not_applicable:
+  angular-only: 'Error presentation is covered by the frontend rules of this stack.'
+  react-only: 'Error presentation is covered by the frontend rules of this stack.'
+  vue-only: 'Error presentation is covered by the frontend rules of this stack.'
+
+requirements:
+  - Always raise a typed domain error rather than a generic one, so the transport layer can map it without inspecting a message.
+  - Always map errors to responses in one central place.
+  - 'Always return a uniform error body: a stable code, a human message, a timestamp.'
+  - Never let a framework or driver error reach the client unmapped.
+
+stacks:
+  java-react:
+    requirements:
+      - 'Always extend the project''s base business exception and map it in `@RestControllerAdvice`.'
+  nestjs-react:
+    requirements:
+      - Always throw a NestJS HTTP exception from the service and shape the body in an exception filter.
+  nextjs:
+    requirements:
+      - Always return a typed error result from a Server Action rather than throwing across the boundary.
+  python-fastapi-react:
+    requirements:
+      - 'Always raise a domain exception and translate it in an `@app.exception_handler`.'

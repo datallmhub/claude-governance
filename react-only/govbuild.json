@@ -31,6 +31,14 @@
         "src/**/*.ts"
       ]
     },
+    "architecture.md": {
+      "from_policies": "architecture",
+      "title": "Architecture Rules — React / TypeScript",
+      "paths": [
+        "src/**/*.tsx",
+        "src/**/*.ts"
+      ]
+    },
     "frontend.md": {
       "own": true
     },
@@ -48,6 +56,15 @@
           "src/**/*.ts"
         ],
         "out": ".github/instructions/security.instructions.md"
+      },
+      {
+        "from_policies": "architecture",
+        "title": "Architecture Rules — React / TypeScript",
+        "paths": [
+          "src/**/*.tsx",
+          "src/**/*.ts"
+        ],
+        "out": ".github/instructions/architecture.instructions.md"
       }
     ]
   }

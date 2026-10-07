@@ -5,20 +5,6 @@ paths:
 
 # Backend Rules — Node.js / NestJS
 
-## Public Identifiers (IDOR Security)
-
-- Always use `publicId: string` (UUID v4) in URLs and response DTOs.
-- Always declare `@Param('taskUid', ParseUUIDPipe) taskUid: string` in controllers. Keep integer `id` internal to the persistence layer only.
-- Always resolve `publicId → internal id` as the first step in the service method.
-
-```typescript
-@Get(':taskUid')
-@UseGuards(JwtAuthGuard)
-findOne(@Param('taskUid', ParseUUIDPipe) taskUid: string, @CurrentUser() user: AuthUser) {
-  return this.tasksService.findByPublicId(taskUid, user.organizationId);
-}
-```
-
 ## Module Boundaries
 
 - Always organize one domain per NestJS module: `TasksModule`, `ProjectsModule`, `AuthModule`.
@@ -51,13 +37,6 @@ export class TasksService {
   ) {}
 }
 ```
-
-## Layered Architecture
-
-- Always follow: `Controller → Service → Repository`. No layer skipping.
-- Controllers validate DTOs, call services, return results. No business logic or entity mapping.
-- Services hold all business logic. No direct query building beyond delegating to repositories.
-- Repositories (TypeORM `Repository<T>` or custom `@Injectable()` repository classes) hold query logic.
 
 ## Controllers
 

@@ -1,0 +1,52 @@
+id: ARCH-001
+title: Layered boundaries
+heading: Layered Boundaries
+severity: high
+evals: [ARCH-01]
+
+enforcement:
+  agent: true
+  ci: true
+  pre_commit: false
+
+not_applicable:
+  angular-only: 'No server layer in this stack — component boundaries are covered by the frontend rules.'
+  react-only: 'No server layer in this stack — component boundaries are covered by the frontend rules.'
+  vue-only: 'No server layer in this stack — component boundaries are covered by the frontend rules.'
+
+requirements:
+  - 'Always follow the chain: transport layer calls the service layer, which alone reaches the persistence layer. No layer is skipped.'
+  - The transport layer validates its input, delegates, and returns a response. It holds no business logic and no ownership check.
+  - The service layer holds the business logic and the authorization decision. It never builds a transport response.
+  - The persistence layer holds the query logic and no business rule.
+
+detect:
+  - id: ARCH-001.repository-in-transport-layer
+    evaluator: regex
+    message: Persistence type referenced from the transport layer — go through the service layer.
+    include:
+      - "**/controller/**/*.java"
+      - "**/*Controller.java"
+      - "**/*.controller.ts"
+      - "**/routers/**/*.py"
+      - "**/routes/**/*.py"
+    pattern: |-
+      \b\w*(Repository|Repo)\b
+
+stacks:
+  java-react:
+    requirements:
+      - 'Always keep the chain `@RestController` → `@Service` → `JpaRepository`.'
+      - A controller method body is a delegation and a return. Two statements at most.
+  nestjs-react:
+    requirements:
+      - 'Always keep the chain `@Controller` → `@Injectable()` service → repository or Prisma client.'
+      - A controller method body is a delegation and a return. Two statements at most.
+  nextjs:
+    requirements:
+      - 'Always keep the chain Server Action or route handler → service module → data access module.'
+      - Never call the Prisma client directly from a component, a Server Action or a route handler.
+  python-fastapi-react:
+    requirements:
+      - 'Always keep the chain router → service → repository.'
+      - A router function resolves its dependencies, delegates, and returns. The business rule lives in the service.
